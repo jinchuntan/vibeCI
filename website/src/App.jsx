@@ -64,9 +64,10 @@ const features = [
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeDiagram, setActiveDiagram] = useState('both');
   return <div className="app" id="top">
     <div className="ambient-grid" aria-hidden="true" />
-    <header className="nav-wrap"><nav className="nav container"><Brand /><div className={`nav-links ${menuOpen ? 'open' : ''}`}><a href="#how-it-works" onClick={() => setMenuOpen(false)}>How it works</a><a href="#principles" onClick={() => setMenuOpen(false)}>Principles</a><a href="#quickstart" onClick={() => setMenuOpen(false)}>Quick start</a><a href={githubUrl} target="_blank" rel="noreferrer" className="mobile-github">GitHub <ArrowRight size={14}/></a></div><div className="nav-actions"><a className="nav-github" href={githubUrl} target="_blank" rel="noreferrer"><Github size={16} /> GitHub <ArrowUpRightIcon /></a><button className="menu-toggle" onClick={() => setMenuOpen(v => !v)} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button></div></nav></header>
+    <header className="nav-wrap"><nav className="nav container"><Brand /><div className={`nav-links ${menuOpen ? 'open' : ''}`}><a href="#how-it-works" onClick={() => setMenuOpen(false)}>How it works</a><a href="#architecture" onClick={() => setMenuOpen(false)}>Architecture</a><a href="#principles" onClick={() => setMenuOpen(false)}>Principles</a><a href="#quickstart" onClick={() => setMenuOpen(false)}>Quick start</a><a href={githubUrl} target="_blank" rel="noreferrer" className="mobile-github">GitHub <ArrowRight size={14}/></a></div><div className="nav-actions"><a className="nav-github" href={githubUrl} target="_blank" rel="noreferrer"><Github size={16} /> GitHub <ArrowUpRightIcon /></a><button className="menu-toggle" onClick={() => setMenuOpen(v => !v)} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button></div></nav></header>
 
     <main>
       <section className="hero container">
@@ -87,32 +88,74 @@ function App() {
 
       <section className="principles container" id="principles"><div className="principles-left"><div className="section-kicker"><span>THE BOUNDARIES MATTER</span><span className="kicker-line"/></div><h2>Useful checks.<br /><span>Honest results.</span></h2><p>No tool can promise that arbitrary software is bug-free. VibeCI should tell you what passed, what failed, what raised a warning, and what it couldn't verify.</p></div><div className="principle-list"><div className="principle-row"><span className="principle-symbol">01</span><div><h3>Local by default</h3><p>Designed to run on your machine, using your project’s existing workflow.</p></div><LockKeyhole size={17}/></div><div className="principle-row"><span className="principle-symbol">02</span><div><h3>Clear over clever</h3><p>Reports should be readable by developers and actionable for coding agents.</p></div><Terminal size={17}/></div><div className="principle-row"><span className="principle-symbol">03</span><div><h3>No false certainty</h3><p>Checks are evidence, not a guarantee. Unverified areas should stay visible.</p></div><ShieldCheck size={17}/></div></div></section>
 
-      <section className="showcase-section" id="showcase">
+      <section className="architecture-section" id="architecture">
         <div className="container">
-          <div className="section-kicker"><span>REAL-WORLD WORKFLOW</span><span className="kicker-line"/><span>001 — 002</span></div>
-          <div className="showcase-heading">
-            <h2>See VibeCI<br /><span>in action.</span></h2>
-            <p>From initial installation to locking your AI assistant into an automated self-healing verification loop.</p>
+          <div className="section-kicker"><span>SYSTEM ARCHITECTURE</span><span className="kicker-line"/><span>001 — 002</span></div>
+          <div className="architecture-header">
+            <div>
+              <h2>How VibeCI<br /><span>verifies code.</span></h2>
+              <p>From an autonomous AI coding agent loop to the modular local execution engine and normalized verification reports.</p>
+            </div>
+            <div className="architecture-tabs" role="tablist" aria-label="Diagram display options">
+              <button
+                className={`arch-tab-btn ${activeDiagram === 'both' ? 'active' : ''}`}
+                onClick={() => setActiveDiagram('both')}
+                role="tab"
+                aria-selected={activeDiagram === 'both'}
+              >
+                Both Diagrams
+              </button>
+              <button
+                className={`arch-tab-btn ${activeDiagram === 'workflow' ? 'active' : ''}`}
+                onClick={() => setActiveDiagram('workflow')}
+                role="tab"
+                aria-selected={activeDiagram === 'workflow'}
+              >
+                AI Agent Loop
+              </button>
+              <button
+                className={`arch-tab-btn ${activeDiagram === 'architecture' ? 'active' : ''}`}
+                onClick={() => setActiveDiagram('architecture')}
+                role="tab"
+                aria-selected={activeDiagram === 'architecture'}
+              >
+                System Pipeline
+              </button>
+            </div>
           </div>
 
-          <div className="showcase-grid">
-            <article className="showcase-card">
-              <div className="showcase-tag">WORKFLOW / 01</div>
-              <h3>Quick Start &amp; Project Verification</h3>
-              <p>Install via <code>uv</code> or <code>pip</code>, run <code>vibeci</code> to discover checks, and pass <code>--json</code> to feed exact file:line:col diagnostics to your agent.</p>
-              <div className="showcase-img-wrap">
-                <img src="/assets/quickstart-guide.png" alt="VibeCI Quick Start guide and verification steps" className="showcase-img" loading="lazy" />
-              </div>
-            </article>
+          <div className={`diagram-grid ${activeDiagram !== 'both' ? 'single-view' : ''}`}>
+            {(activeDiagram === 'both' || activeDiagram === 'workflow') && (
+              <article className="diagram-card">
+                <div className="diagram-tag">WORKFLOW / 01</div>
+                <h3>AI Coding Agent Verification Loop</h3>
+                <p>When an AI agent modifies code, VibeCI executes static analysis, production builds, behavioral suites, and runtime health checks before generating a single actionable report.</p>
+                <div className="diagram-img-wrap">
+                  <img
+                    src="/assets/workflow.svg"
+                    alt="AI coding agent verification workflow with VibeCI Verification Engine and four check categories"
+                    className="diagram-img"
+                    loading="lazy"
+                  />
+                </div>
+              </article>
+            )}
 
-            <article className="showcase-card">
-              <div className="showcase-tag">WORKFLOW / 02</div>
-              <h3>1-Command AI Assistant Rules</h3>
-              <p>Run <code>vibeci rule</code> to instantly configure Cursor, Claude Code, GitHub Copilot, and Google Antigravity to verify code before every finish.</p>
-              <div className="showcase-img-wrap">
-                <img src="/assets/terminal-agent-rules.png" alt="vibeci rule configuring AI agent verification rules" className="showcase-img" loading="lazy" />
-              </div>
-            </article>
+            {(activeDiagram === 'both' || activeDiagram === 'architecture') && (
+              <article className="diagram-card">
+                <div className="diagram-tag">SYSTEM / 02</div>
+                <h3>Detection &amp; Execution Pipeline</h3>
+                <p>CLI and agent interface triggers project detection and execution planning, runs modular checks with zero configuration, and normalizes findings through the result engine.</p>
+                <div className="diagram-img-wrap">
+                  <img
+                    src="/assets/architecture.svg"
+                    alt="VibeCI system architecture showing CLI interface, project detector, check runners, and result engine"
+                    className="diagram-img"
+                    loading="lazy"
+                  />
+                </div>
+              </article>
+            )}
           </div>
         </div>
       </section>

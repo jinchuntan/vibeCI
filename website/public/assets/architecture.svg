@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 560" width="840" height="560" fill="none">
+  <defs>
+    <style>
+      .font-sans {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      }
+    </style>
+    
+    <linearGradient id="archCardGrad" x1="0" y1="0" x2="376" y2="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F1420" />
+      <stop offset="100%" stop-color="#080C14" />
+    </linearGradient>
+
+    <marker id="archArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 5 5 L 0 8.5 z" fill="#64748B" />
+    </marker>
+  </defs>
+
+  <!-- Outer Border Container -->
+  <rect width="840" height="560" rx="16" fill="#040711" stroke="#1E293B" stroke-width="1.2" />
+
+  <!-- 1. CLI and agent interface -->
+  <g transform="translate(420, 24)">
+    <text x="0" y="24" text-anchor="middle" class="font-sans" font-size="16" font-weight="600" fill="#F8FAFC">CLI and agent interface</text>
+    <!-- Code Pills -->
+    <g transform="translate(0, 44)">
+      <rect x="-135" y="-14" width="60" height="22" rx="4" fill="#1E293B" />
+      <text x="-105" y="1" text-anchor="middle" class="font-sans" font-size="12" font-family="monospace" fill="#38BDF8">verify</text>
+      
+      <circle cx="-65" cy="-3" r="2" fill="#64748B" />
+
+      <rect x="-55" y="-14" width="56" height="22" rx="4" fill="#1E293B" />
+      <text x="-27" y="1" text-anchor="middle" class="font-sans" font-size="12" font-family="monospace" fill="#38BDF8">check</text>
+
+      <circle cx="11" cy="-3" r="2" fill="#64748B" />
+
+      <text x="75" y="1" text-anchor="middle" class="font-sans" font-size="13" font-weight="400" fill="#94A3B8">JSON output</text>
+    </g>
+  </g>
+
+  <!-- Down Arrow -->
+  <path d="M420 86V108" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" marker-end="url(#archArrow)" />
+
+  <!-- 2. Project detector and planner -->
+  <g transform="translate(36, 116)">
+    <rect width="768" height="74" rx="10" fill="#0B0F19" stroke="#1E293B" stroke-width="1.2" />
+    <text x="384" y="34" text-anchor="middle" class="font-sans" font-size="15" font-weight="600" fill="#F8FAFC">Project detector and planner</text>
+    <text x="384" y="55" text-anchor="middle" class="font-sans" font-size="13" font-weight="400" fill="#94A3B8">Identify stack, configuration, available checks and dependencies</text>
+  </g>
+
+  <!-- Down Arrow -->
+  <path d="M420 198V220" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" marker-end="url(#archArrow)" />
+
+  <!-- 3. 2x2 Grid of Checks -->
+  <!-- Static Checks -->
+  <g transform="translate(36, 228)">
+    <rect width="376" height="84" rx="10" fill="url(#archCardGrad)" stroke="#1E293B" stroke-width="1.2" />
+    <g transform="translate(188, 12)" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M-9 4V-1C-9 -1.5 -8.5 -2 -8 -2H-3" />
+      <path d="M3 -2H8C8.5 -2 9 -1.5 9 -1V4" />
+      <path d="M9 10V15C9 15.5 8.5 16 8 16H3" />
+      <path d="M-3 16H-8C-8.5 16 -9 15.5 -9 15V10" />
+    </g>
+    <text x="188" y="52" text-anchor="middle" class="font-sans" font-size="15" font-weight="600" fill="#F8FAFC">Static checks</text>
+    <text x="188" y="70" text-anchor="middle" class="font-sans" font-size="12.5" font-weight="400" fill="#94A3B8">Imports, types, lint</text>
+  </g>
+
+  <!-- Build Checks -->
+  <g transform="translate(428, 228)">
+    <rect width="376" height="84" rx="10" fill="url(#archCardGrad)" stroke="#1E293B" stroke-width="1.2" />
+    <g transform="translate(188, 12)" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M3 -2L6 1L1 6L-0.5 4.5L1.5 2.5L0.5 1.5L-1.5 3.5L-3 2L1.5 -2.5L3 -2Z" fill="#E2E8F0" fill-opacity="0.3" />
+      <path d="M-3 2L-8 7C-8.8 7.8 -8.8 9 -8 9.8L-6.8 11C-6 11.8 -4.8 11.8 -4 11L1 6" />
+    </g>
+    <text x="188" y="52" text-anchor="middle" class="font-sans" font-size="15" font-weight="600" fill="#F8FAFC">Build checks</text>
+    <text x="188" y="70" text-anchor="middle" class="font-sans" font-size="12.5" font-weight="400" fill="#94A3B8">Compile, bundle</text>
+  </g>
+
+  <!-- Behavior Checks -->
+  <g transform="translate(36, 322)">
+    <rect width="376" height="84" rx="10" fill="url(#archCardGrad)" stroke="#1E293B" stroke-width="1.2" />
+    <g transform="translate(188, 12)" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M-3 -2H3" />
+      <path d="M-1 -2V2L-6 11C-6.5 12 -5.8 13 -4.7 13H4.7C5.8 13 6.5 12 6 11L1 2V-2" />
+    </g>
+    <text x="188" y="52" text-anchor="middle" class="font-sans" font-size="15" font-weight="600" fill="#F8FAFC">Behavior checks</text>
+    <text x="188" y="70" text-anchor="middle" class="font-sans" font-size="12.5" font-weight="400" fill="#94A3B8">Existing and generated</text>
+  </g>
+
+  <!-- Runtime Checks -->
+  <g transform="translate(428, 322)">
+    <rect width="376" height="84" rx="10" fill="url(#archCardGrad)" stroke="#1E293B" stroke-width="1.2" />
+    <g transform="translate(188, 12)" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <rect x="-8" y="-1" width="16" height="13" rx="2" />
+      <path d="M-5 9L-3 7L0 10L3 7L5 9" />
+    </g>
+    <text x="188" y="52" text-anchor="middle" class="font-sans" font-size="15" font-weight="600" fill="#F8FAFC">Runtime checks</text>
+    <text x="188" y="70" text-anchor="middle" class="font-sans" font-size="12.5" font-weight="400" fill="#94A3B8">Startup and smoke tests</text>
+  </g>
+
+  <!-- Down Arrow -->
+  <path d="M420 414V436" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" marker-end="url(#archArrow)" />
+
+  <!-- 4. Result engine -->
+  <g transform="translate(420, 452)">
+    <text x="0" y="24" text-anchor="middle" class="font-sans" font-size="16" font-weight="600" fill="#F8FAFC">Result engine</text>
+    <text x="0" y="46" text-anchor="middle" class="font-sans" font-size="13" font-weight="400" fill="#94A3B8">Normalize results · rank actionable findings · produce JSON and human-readable reports</text>
+  </g>
+</svg>
