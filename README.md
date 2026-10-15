@@ -1,4 +1,8 @@
-# VibeCI ⚡
+<p align="center">
+  <img src="assets/logo.svg" width="88" height="88" alt="VibeCI Logo" />
+</p>
+
+<h1 align="center">VibeCI</h1>
 
 <p align="center">
   <b>Local Software Verification Engine for AI-Generated Code</b><br>
@@ -28,47 +32,9 @@ Most AI-generated projects have **few or zero unit tests**. Standard test runner
 
 ## 🏗️ The 5 Verification Layers
 
-```
-       ┌────────────────────────┐
-       │   AI Coding Agent /    │  Cursor / Claude Code / Copilot / Human
-       │       Developer        │
-       └───────────┬────────────┘
-                   │
-                   ▼
-┌────────────────────────────────────────────────────────┐
-│             VibeCI Verification Engine                 │
-│                                                        │
-│  Layer 1: Project Health & Static Scanner              │
-│           • Broken imports & missing dependencies      │
-│           • Environment variable audit (.env.example)  │
-│           • Secret leak detection (hardcoded keys)     │
-│           • Type inconsistencies & syntax defects      │
-│                                                        │
-│  Layer 2: Production Build Verification                │
-│           • Bundling & compilation failures            │
-│           • Missing build-time assets & dependencies   │
-│                                                        │
-│  Layer 3: Runtime Smoke Testing                        │
-│           • Application boot & startup crash check     │
-│           • HTTP route & health check response probe   │
-│           • Clean process lifecycle management         │
-│                                                        │
-│  Layer 4: Behavior & Existing Tests                    │
-│           • Project unit & integration test suites     │
-│                                                        │
-│  Layer 5: Honest Unverified Capabilities               │
-│           • Explicitly states what could NOT be checked│
-│             (e.g., unconfigured DB, live 3rd-party APIs│
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│            Actionable Verification Report              │
-│  • Passed / Failed / Warnings / Not Checked            │
-│  • Exact evidence and file locations for AI agent      │
-│  • Clear verdict and honest boundaries for human       │
-└────────────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="assets/workflow.svg" width="100%" alt="VibeCI Verification Engine Workflow" />
+</p>
 
 1. **Layer 1: Static Health & Preflight (Works with Zero Tests):**
    - **Environment Preflight:** Compares referenced `process.env` / `os.environ` variables against `.env.example` to catch undocumented configuration before deployment.

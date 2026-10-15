@@ -10,47 +10,15 @@ Traditional developer tooling separates testing into isolated silos: linters (`e
 
 VibeCI unifies these layers into a **single, local software verification engine** that detects defects before code reaches remote CI or production—even when zero unit tests exist.
 
-```
-       ┌────────────────────────┐
-       │   AI Coding Agent /    │  Cursor / Claude Code / Copilot / Human
-       │       Developer        │
-       └───────────┬────────────┘
-                   │
-                   ▼
-┌────────────────────────────────────────────────────────┐
-│             VibeCI Verification Engine                 │
-│                                                        │
-│  Layer 1: Project Health & Static Scanner              │
-│           • Broken imports & missing dependencies      │
-│           • Environment variable audit (.env.example)  │
-│           • Secret leak detection (hardcoded keys)     │
-│           • Type inconsistencies & syntax defects      │
-│                                                        │
-│  Layer 2: Production Build Verification                │
-│           • Bundling & compilation failures            │
-│           • Missing build-time assets & dependencies   │
-│                                                        │
-│  Layer 3: Runtime Smoke Testing                        │
-│           • Application boot & startup crash check     │
-│           • HTTP route & health check response probe   │
-│           • Clean process lifecycle management         │
-│                                                        │
-│  Layer 4: Behavior & Existing Tests                    │
-│           • Project unit & integration test suites     │
-│                                                        │
-│  Layer 5: Honest Unverified Capabilities               │
-│           • Explicitly states what could NOT be checked│
-│             (e.g., unconfigured DB, live 3rd-party APIs│
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│            Actionable Verification Report              │
-│  • Passed / Failed / Warnings / Not Checked            │
-│  • Exact evidence and file locations for AI agent      │
-│  • Clear verdict and honest boundaries for human       │
-└────────────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="../assets/workflow.svg" width="100%" alt="VibeCI Verification Engine Workflow" />
+</p>
+
+### Pipeline Architecture
+
+<p align="center">
+  <img src="../assets/architecture.svg" width="100%" alt="VibeCI Internal Architecture Pipeline" />
+</p>
 
 ---
 

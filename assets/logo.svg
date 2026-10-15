@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="16" y1="12" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="44" y1="28" x2="84" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="40%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#93C5FD" />
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="128" height="128" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Ambient Glow -->
+  <path d="M64 14L104 28V60C104 87.6 86.8 111.4 64 120C41.2 111.4 24 87.6 24 60V28L64 14Z" fill="#3B82F6" opacity="0.25" filter="url(#glow)" />
+
+  <!-- Shield Base Background -->
+  <path d="M64 14L104 28V60C104 87.6 86.8 111.4 64 120C41.2 111.4 24 87.6 24 60V28L64 14Z" fill="#0B0F19" stroke="url(#shieldGrad)" stroke-width="4" stroke-linejoin="round" />
+
+  <!-- Inner Shield Fill -->
+  <path d="M64 22L96 33.2V58.4C96 80.8 82.4 100.2 64 108C45.6 100.2 32 80.8 32 58.4V33.2L64 22Z" fill="url(#shieldGrad)" fill-opacity="0.18" />
+
+  <!-- Verification Lightning Bolt & Checkmark hybrid -->
+  <path d="M68 32L44 68H62L58 98L86 58H66L72 32H68Z" fill="url(#boltGrad)" stroke="#1E40AF" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+
+  <!-- Tiny Accent Stars / Dots -->
+  <circle cx="38" cy="46" r="1.5" fill="#93C5FD" opacity="0.8" />
+  <circle cx="90" cy="50" r="1.5" fill="#93C5FD" opacity="0.8" />
+  <circle cx="64" cy="112" r="2" fill="#60A5FA" opacity="0.9" />
+</svg>
