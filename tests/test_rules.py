@@ -39,3 +39,12 @@ def test_append_preserves_existing_instructions(tmp_path: Path):
     assert "Always be concise." in content
     assert VIBECI_RULE_HEADER in content
     assert "vibeci verify --diff --json" in content
+
+
+def test_install_rules_antigravity(tmp_path: Path):
+    installed = install_rules(tmp_path, agent="antigravity")
+    assert ".agents/rules/vibeci.md" in installed
+    assert "AGENTS.md" in installed
+    assert (tmp_path / ".agents" / "rules" / "vibeci.md").exists()
+    assert (tmp_path / "AGENTS.md").exists()
+
