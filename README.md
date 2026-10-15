@@ -5,8 +5,12 @@
 <h1 align="center">VibeCI</h1>
 
 <p align="center">
-  <b>Local Software Verification Engine for AI-Generated Code</b><br>
-  <i>Catch secret leaks, missing env vars, and build/runtime defects locally — even with <b>zero tests</b>.</i>
+  <b>Your AI wrote it. VibeCI checks it.</b><br>
+  <i>The local safety layer that checks AI-written code before it gets pushed. Catch secret leaks, missing env vars, broken builds, and startup crashes — even with <b>zero tests</b>.</i>
+</p>
+
+<p align="center">
+  <b>Local-First</b> • <b>Agent-Native</b> • <b>Sub-Second Feedback</b> • <b>Zero-Config</b>
 </p>
 
 <p align="center">
@@ -22,11 +26,11 @@
 
 ## 💡 Why VibeCI?
 
-AI coding assistants (Claude Code, Cursor, Copilot, Codex) have made generating code instant. But discovering whether that code *actually works* is the new bottleneck.
+AI coding assistants (Claude Code, Cursor, Copilot, Codex) have made writing code instant. But discovering whether that code *actually works* is the new bottleneck.
 
-Most AI-generated projects have **few or zero unit tests**. Standard test runners (`npm test`, `pytest`) can only test what someone has already written. When AI creates scratch files with hardcoded credentials, references new undocumented environment variables, or breaks production bundlers, traditional test runners report that everything passed.
+Most AI-generated projects have **few or zero unit tests**. Standard test runners (`npm test`, `pytest`) only test what has already been written. When AI creates scratch files with hardcoded credentials, references new undocumented environment variables, breaks production bundlers, or causes startup crashes, traditional test runners report that everything passed.
 
-**VibeCI is a local software verification engine.** It inspects, builds, analyzes, and exercises your application across **5 verification layers** before code reaches remote CI or production.
+**VibeCI is not another remote CI runner.** It is the **local safety layer** that sits directly between your AI coding assistant and your git repository. It inspects, builds, analyzes, and exercises your application across **5 verification layers** before code is committed or pushed.
 
 ---
 

@@ -1,4 +1,6 @@
-# VibeCI — Local Verification Engine for AI-Written Code
+# VibeCI — Local Verification for AI-Written Code
+
+> **Your AI wrote it. VibeCI checks it.**
 
 **Product:** VibeCI — Local Software Verification Engine for AI-Generated Code  
 **Category:** Open-source developer tool & AI coding safety layer  
