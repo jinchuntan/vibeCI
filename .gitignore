@@ -20,3 +20,6 @@ wheels/
 node_modules/
 website/dist/
 .vite/
+
+# OS
+.DS_Store

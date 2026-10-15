@@ -14,6 +14,11 @@
 .showcase-img{width:100%;height:auto;display:block;transition:transform .3s ease}
 .showcase-card:hover .showcase-img{transform:scale(1.02)}
 .quickstart-actions{display:flex;gap:12px;flex-wrap:wrap}
+.brand-logo-img{width:26px;height:26px;border-radius:6px;object-fit:cover;box-shadow:0 0 14px rgba(139,124,255,.35);transition:transform .2s ease}
+.brand:hover .brand-logo-img{transform:scale(1.08)}
+.closing-logo-img{width:56px;height:56px;border-radius:14px;object-fit:cover;box-shadow:0 0 30px rgba(139,124,255,.4);margin-bottom:6px;transition:transform .3s ease}
+.closing-logo-img:hover{transform:scale(1.06)}
 @media(max-width:880px){.showcase-grid{grid-template-columns:1fr;gap:20px}.showcase-section{padding:65px 0}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
 

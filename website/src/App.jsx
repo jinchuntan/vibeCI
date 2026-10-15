@@ -4,7 +4,7 @@ import { ArrowDownRight, ArrowRight, Check, CheckCircle2, ChevronRight, Circle, 
 const githubUrl = 'https://github.com/piyush588/vibeCI';
 
 function Brand({ compact = false }) {
-  return <a className="brand" href="#top" aria-label="VibeCI home"><span className="brand-mark"><span /><span /><span /></span><span>vibe<span className="brand-ci">ci</span></span>{!compact && <span className="brand-version">OPEN SOURCE</span>}</a>;
+  return <a className="brand" href="#top" aria-label="VibeCI home"><img src="/assets/logo.png" alt="VibeCI Logo" className="brand-logo-img" /><span>vibe<span className="brand-ci">ci</span></span>{!compact && <span className="brand-version">v0.3.0</span>}</a>;
 }
 
 function LivingTerminal() {
@@ -119,7 +119,7 @@ function App() {
 
       <section className="quickstart-section" id="quickstart"><div className="container quickstart"><div className="quickstart-copy"><div className="section-kicker"><span>GET YOUR HANDS ON IT</span><span className="kicker-line"/><span>START HERE</span></div><h2>Try it on<br /><span>your project.</span></h2><p>VibeCI is open source and available now on PyPI. Run it on your project and give your AI coding agent zero-defect verification loops.</p><div className="quickstart-actions"><a className="button button-primary" href={githubUrl} target="_blank" rel="noreferrer">View on GitHub <ArrowRight size={16}/></a><a className="button button-secondary" href="https://pypi.org/project/vibeci/" target="_blank" rel="noreferrer">PyPI Package <ArrowUpRightIcon /></a></div></div><div className="quickstart-code"><div className="code-head"><span><Terminal size={14}/> TERMINAL</span><span>INSTALL / 001</span></div><div className="code-body"><p className="code-comment"># 1. Install globally with uv (recommended)</p><CopyInstall /><p className="code-comment code-comment-gap"># 2. Configure AI agent verification rules</p><div className="code-static"><span>$</span> vibeci rule</div><p className="code-comment code-comment-gap"># 3. Run sub-second verification on your git changes</p><div className="code-static"><span>$</span> vibeci verify --diff --json</div><div className="code-footnote"><Circle size={11}/> Published on PyPI as <b>vibeci</b> (v0.3.0). Free &amp; Open Source (MIT).</div></div></div></div></section>
 
-      <section className="closing container"><div className="closing-mark"><span/><span/><span/></div><p>Build with AI. Ship with more confidence.</p><h2>Your AI wrote it.<br /><span>VibeCI checks it.</span></h2><a href={githubUrl} target="_blank" rel="noreferrer" className="closing-link">Explore VibeCI on GitHub <ArrowRight size={16}/></a></section>
+      <section className="closing container"><img src="/assets/logo.png" alt="VibeCI Logo" className="closing-logo-img" /><p>Build with AI. Ship with more confidence.</p><h2>Your AI wrote it.<br /><span>VibeCI checks it.</span></h2><a href={githubUrl} target="_blank" rel="noreferrer" className="closing-link">Explore VibeCI on GitHub <ArrowRight size={16}/></a></section>
     </main>
     <footer className="footer"><div className="container footer-inner"><Brand compact/><span>Open source, built for the next coding workflow.</span><div className="footer-links"><a href={githubUrl} target="_blank" rel="noreferrer">GitHub <ArrowUpRightIcon/></a><a href="#top">Back to top ↑</a></div><span className="footer-copy">© {new Date().getFullYear()} VibeCI</span></div></footer>
   </div>;

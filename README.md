@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" width="80" height="80" alt="VibeCI logo" />
+  <img src="assets/logo.png" width="96" height="96" alt="VibeCI logo" style="border-radius: 20px;" />
 </p>
 
 <h1 align="center">VibeCI</h1>
