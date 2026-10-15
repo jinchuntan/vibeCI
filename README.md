@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://vibeci.wasmer.app">🌐 Website</a> ·
   <a href="#-quick-start">Quick Start</a> ·
   <a href="#-what-vibeci-checks">What It Checks</a> ·
   <a href="#-ai-agent-integration">AI Agent Integration</a> ·

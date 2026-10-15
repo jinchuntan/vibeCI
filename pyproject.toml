@@ -19,6 +19,11 @@ dev = [
 [project.scripts]
 vibeci = "vibeci.cli:main"
 
+[project.urls]
+Homepage = "https://vibeci.wasmer.app"
+Repository = "https://github.com/piyush588/vibeCI"
+Documentation = "https://vibeci.wasmer.app#docs"
+
 [build-system]
 requires = ["uv_build>=0.11.6,<0.12.0"]
 build-backend = "uv_build"
