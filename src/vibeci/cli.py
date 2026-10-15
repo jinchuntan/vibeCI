@@ -16,7 +16,7 @@ from vibeci.formatters.json_output import format_json_report
 from vibeci.models import OverallStatus, VerificationReport
 from vibeci.runner import CheckRunner
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 
 
 def build_parser() -> argparse.ArgumentParser:
