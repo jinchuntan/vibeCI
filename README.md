@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="assets/logo.png" width="96" height="96" alt="VibeCI logo" style="border-radius: 20px;" />
+  <a href="https://vibeci.wasmer.app" target="_blank">
+    <img src="assets/logo.png" width="96" height="96" alt="VibeCI logo" style="border-radius: 20px;" />
+  </a>
 </p>
 
 <h1 align="center">VibeCI</h1>
@@ -10,7 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://vibeci.wasmer.app">🌐 Website</a> ·
+  <a href="https://vibeci.wasmer.app"><img src="https://img.shields.io/badge/website-vibeci.wasmer.app-8b7cff?style=flat-square" alt="Website" /></a>
+  <a href="https://pypi.org/project/vibeci/"><img src="https://img.shields.io/pypi/v/vibeci?color=blue&style=flat-square" alt="PyPI version" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License: MIT" /></a>
+</p>
+
+<p align="center">
+  <a href="https://vibeci.wasmer.app">🌐 <strong>Live Website</strong></a> ·
   <a href="#-quick-start">Quick Start</a> ·
   <a href="#-what-vibeci-checks">What It Checks</a> ·
   <a href="#-ai-agent-integration">AI Agent Integration</a> ·
