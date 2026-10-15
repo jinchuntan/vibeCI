@@ -1,0 +1,24 @@
+[project]
+name = "vibeci"
+version = "0.1.0"
+description = "VibeCI — Local Verification for AI-Written Code"
+readme = "README.md"
+authors = [
+    { name = "Piyush Kumar", email = "kumarpiyush2k6@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+vibeci = "vibeci.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.11.6,<0.12.0"]
+build-backend = "uv_build"
