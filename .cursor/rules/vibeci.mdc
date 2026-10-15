@@ -1,0 +1,30 @@
+---
+description: Always verify code changes with VibeCI
+globs: *
+alwaysApply: true
+---
+
+<!-- VIBECI:AI-RULE:START -->
+# VibeCI AI Verification Protocol
+
+You must verify your code changes using VibeCI before declaring any task complete:
+
+1. **Run Verification Command**:
+   Execute `vibeci verify --diff --json` in your terminal after modifying or creating code files.
+
+2. **Inspect the JSON Output**:
+   - Check the `"status"` field:
+     - `"passed"`: All checks passed with zero defects. You may proceed.
+     - `"failed"` or `"warnings"`: Defects detected. Must be fixed immediately.
+   - For any check in `"checks"` with `"status": "failed"`:
+     - Read `"file_locations"` for exact `file`, `line`, and `column` coordinates.
+     - Read `"failure_details"` for compiler/linter error messages and stack traces.
+     - Check `"security:secrets"`: Remove hardcoded API keys, secrets, or DB passwords.
+     - Check `"env:preflight"`: Add missing referenced environment variables to `.env.example`.
+
+3. **Self-Correction Loop**:
+   - Apply fixes to the specific files and line numbers reported in `file_locations`.
+   - Never weaken or delete tests to bypass verification.
+   - Re-run `vibeci verify --diff --json` until `"status": "passed"`.
+   - Do NOT declare the task complete or tell the user the task is done until `vibeci verify` passes.
+<!-- VIBECI:AI-RULE:END -->
