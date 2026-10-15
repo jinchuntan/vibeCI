@@ -1,219 +1,318 @@
 <p align="center">
-  <img src="assets/logo.svg" width="88" height="88" alt="VibeCI Logo" />
+  <img src="assets/logo.svg" width="80" height="80" alt="VibeCI logo" />
 </p>
 
 <h1 align="center">VibeCI</h1>
 
 <p align="center">
-  <b>Your AI wrote it. VibeCI checks it.</b><br>
-  <i>The local safety layer that checks AI-written code before it gets pushed. Catch secret leaks, missing env vars, broken builds, and startup crashes — even with <b>zero tests</b>.</i>
+  <strong>Your AI wrote it. VibeCI checks it.</strong><br />
+  Local verification for AI-generated code — before it reaches CI or production.
 </p>
 
 <p align="center">
-  <b>Local-First</b> • <b>Agent-Native</b> • <b>Sub-Second Feedback</b> • <b>Zero-Config</b>
-</p>
-
-<p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-the-5-verification-layers">Verification Layers</a> •
-  <a href="#-smart-change-aware-verification---diff">Smart Diff</a> •
-  <a href="#-automated-pre-push-hook">Git Hook</a> •
-  <a href="#-ai-agent-integration">AI Agents</a> •
+  <a href="#-quick-start">Quick Start</a> ·
+  <a href="#-what-vibeci-checks">What It Checks</a> ·
+  <a href="#-ai-agent-integration">AI Agent Integration</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a>
 </p>
 
----
-
-## 💡 Why VibeCI?
-
-AI coding assistants (Claude Code, Cursor, Copilot, Codex) have made writing code instant. But discovering whether that code *actually works* is the new bottleneck.
-
-Most AI-generated projects have **few or zero unit tests**. Standard test runners (`npm test`, `pytest`) only test what has already been written. When AI creates scratch files with hardcoded credentials, references new undocumented environment variables, breaks production bundlers, or causes startup crashes, traditional test runners report that everything passed.
-
-**VibeCI is not another remote CI runner.** It is the **local safety layer** that sits directly between your AI coding assistant and your git repository. It inspects, builds, analyzes, and exercises your application across **5 verification layers** before code is committed or pushed.
-
----
-
-## 🏗️ The 5 Verification Layers
-
 <p align="center">
-  <img src="assets/workflow.svg" width="100%" alt="VibeCI Verification Engine Workflow" />
+  <strong>Local-first</strong> · <strong>Agent-native</strong> · <strong>Open source</strong>
 </p>
 
-1. **Layer 1: Static Health & Preflight (Works with Zero Tests):**
-   - **Environment Preflight:** Compares referenced `process.env` / `os.environ` variables against `.env.example` to catch undocumented configuration before deployment.
-   - **Secret Leak Detection:** Scans for hardcoded AWS keys, database connection strings, and tokens.
-   - **Type & Lint Checks:** Fast project analysis via TypeScript, mypy, ESLint, or Ruff.
-2. **Layer 2: Production Build Verification:**
-   - Compiles and bundles using project build systems (`npm run build`, `turbo build`, `vite build`, `uv build`).
-   - Catches bundling failures that survive syntax checking.
-3. **Layer 3: Runtime Smoke Testing:**
-   - Boots the app in a sandboxed process group, verifies it doesn't crash on startup, and exercises HTTP routes (`/`, health checks).
-4. **Layer 4: Behavior & Existing Tests:**
-   - Executes discovered Jest, Vitest, and pytest test suites with forced non-interactive CI flags.
-5. **Layer 5: Honest Unverified Accounting:**
-   - Transparently lists what could **not** be verified (e.g. unconfigured database queries, third-party payment gateways).
+---
+
+## 💡 The Problem
+
+AI coding assistants make it easier than ever to generate code. But generated code is not necessarily working code.
+
+- A feature can compile while referencing missing environment variables.
+- A project can have no tests at all.
+- An application can build successfully and still crash when it starts.
+
+Running `npm test` or `pytest` only tells you what the tests you actually wrote can establish.
+
+**VibeCI helps you catch more problems before you push.**
+
+It brings project checks, static analysis, build verification, environment preflight, and runtime smoke testing into one local workflow. It also produces structured results that AI coding agents can use to investigate and fix failures.
+
+No cloud dashboard. No separate CI server. No requirement to write a complete test suite before getting useful feedback.
 
 ---
 
 ## 🚀 Quick Start
 
-### Installation
+### 1. Install
 
-VibeCI is fully cross-platform and runs natively on **macOS**, **Linux**, and **Windows** (PowerShell, Command Prompt, or WSL).
+VibeCI is written in Python. Install it using `uv` (recommended):
 
-#### Using `uv` (Recommended, All Operating Systems):
 ```bash
-# macOS, Linux, and Windows:
 uv tool install vibeci
 ```
 
-#### Using `pip` / `pipx`:
-```bash
-# macOS & Linux:
-pip install vibeci
-# or install from source locally:
-pip install -e .
+Alternatively, install it with `pip`:
 
-# Windows (PowerShell / Command Prompt):
+```bash
 python -m pip install vibeci
-# or install from source locally:
+```
+
+For development from a cloned repository:
+
+```bash
+git clone https://github.com/piyush588/vibeCI.git
+cd vibeCI
 python -m pip install -e .
 ```
 
-### Run Verification
+### 2. Verify Your Project
 
-In any project repository root:
+Navigate to the root of your application and run:
 
 ```bash
-# Run full 5-layer software verification
 vibeci verify
+```
 
-# Or simply:
+Or simply:
+
+```bash
 vibeci
 ```
 
----
+VibeCI discovers applicable checks, executes them, and summarizes the results.
 
-## ⚡ Smart Change-Aware Verification (`--diff`)
-
-Don't wait for full repository builds on every small AI prompt. Using `vibeci verify --diff`, VibeCI inspects git changes and verifies **only modified files in under 1 second**:
+### 3. Get Results Your AI Can Use
 
 ```bash
-# Verify only uncommitted / unstaged files modified by AI
+vibeci verify --json
+```
+
+Use the structured report to help your coding agent identify failures, understand their exact `file:line:col` locations, and verify fixes automatically.
+
+> **Tip:** Run VibeCI after an AI-generated change and before pushing it. Add automatic verification to your agent workflow once you've confirmed the commands and checks are appropriate for your project.
+
+---
+
+## 🏗️ What VibeCI Checks
+
+VibeCI is designed to provide useful verification even when a project has few or no tests across **5 verification layers**:
+
+### 1. Static Health and Environment Preflight
+*Find problems that can be detected without starting the application.*
+- **Secret leak detection:** Scan for potentially exposed credentials and hardcoded secrets (AWS keys, GitHub tokens, database passwords).
+- **Environment preflight:** Compare recognized environment variable references (`process.env`, `os.environ`) with `.env.example`.
+- **Type & lint checks:** Run applicable linting and type-checking tools when available (`tsc --noEmit`, `mypy`, `ruff`, `eslint`, `biome`).
+- **Configuration audit:** Identify configuration and dependency problems supported by available checks.
+
+### 2. Production Build Verification
+*Check whether the project can compile and produce its configured build artifacts.*
+- Run the project's configured production build (`npm run build`, `turbo build`, `vite build`, `uv build`).
+- Surface compilation and bundling failures that survive static syntax checks.
+- Report build errors separately from non-fatal warnings.
+- Support build systems and package managers (`npm`, `pnpm`, `yarn`, `bun`, `uv`).
+
+*(A successful build does not guarantee that the application behaves correctly at runtime.)*
+
+### 3. Runtime Smoke Testing (`--smoke`)
+*Where supported and configured, exercise the application rather than only inspecting its source.*
+- Start the application using a known command in a sandboxed process group.
+- Check whether the process boots successfully without crashing.
+- Wait for a configured readiness condition (socket listener).
+- Probe configured HTTP endpoints (`/`, `/api/health`).
+- Report startup failures and unsuccessful HTTP responses (`HTTP >= 500`).
+- Cleanly terminate all spawned processes without leaving dangling port listeners.
+
+### 4. Existing Tests
+*Discover and run supported test commands.*
+- Discover and execute configured `pytest`, `vitest`, and `jest` suites.
+- Reuses existing testing tools rather than replacing them with a proprietary test runner.
+- Enforce non-interactive CI flags to prevent test runners from hanging in interactive watch mode.
+
+*(No tests configured? VibeCI still performs all other applicable checks. It does not automatically guarantee behavioral correctness when tests are absent.)*
+
+### 5. Honest Verification Boundaries
+*A useful report must explain not only what passed, but also what remains unverified.*
+Depending on the project, that might include:
+- **Database Integration:** Database drivers are installed, but no test database was configured.
+- **External Third-Party APIs:** Live third-party credentials (payment gateways, messaging) were not exercised.
+- **Browser Flows:** No browser automation tool (Playwright, Cypress) is configured.
+- **Untested Features:** Features that have no tests or known expected behavior.
+
+*(A skipped or unavailable check is never presented as a passing check.)*
+
+---
+
+## 📋 Understand Your Verification Report
+
+A VibeCI report helps you answer three questions:
+1. **What passed?**
+2. **What needs attention?**
+3. **What could not be verified?**
+
+### Example Terminal Report:
+
+```text
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ ⚡ VibeCI • Local Verification for AI-Written Code                           │
+│ Project: my-app  |  Ecosystem: javascript                                    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+  ✔ PASSED  env:preflight      env          0.02s  All referenced env vars documented in .env.example
+  ✔ PASSED  npm:build          build        2.14s  Production bundle built successfully
+  ✔ PASSED  vitest             test         1.12s  14 passed (14)
+  ✘ FAILED  security:secrets   security     0.01s  Detected hardcoded credentials
+  ⚠ WARNING  npm:lint          lint         1.05s  2 warnings found
+
+── What Needs Fixing? ───────────────────────────────────────────
+╭───────────────────────── [FAILED] security:secrets ──────────────────────────╮
+│ Issue: Hardcoded database connection string with password                     │
+│ Location: src/database.ts:14                                                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+── Unverified Capabilities (Honest Boundaries) ─────────────────
+  ○ Database Integration        — Drivers installed, but no test database configured.
+  ○ External Third-Party APIs   — Live Stripe API credentials were not exercised.
+  ○ End-to-End Browser Flows    — No browser automation tool configured.
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ ✘ VERDICT: FAILED                                                            │
+│ 1 check failed. Review evidence above or feed --json to your AI agent.       │
+╰──── 3 Passed  •  1 Failed  •  1 Warnings  •  3 Not Checked  (in 4.34s) ──────╯
+```
+
+VibeCI distinguishes failed checks, warnings, skipped checks, and capabilities that remain unverified. A green result means the checks that ran passed; it is not an empty guarantee of production readiness.
+
+---
+
+## ⚡ Smart Change-Aware Verification
+
+Large projects can take time to verify in full. VibeCI provides change-aware verification options intended to focus work on modified code:
+
+```bash
+# Verify changes detected through Git
 vibeci verify --diff
 
-# Compare changes against a specific commit or branch
+# Compare against a branch
 vibeci verify --diff --since main
+
+# Compare against a previous commit
 vibeci verify --diff --since HEAD~1
 ```
 
-*Benchmark:* On a production Turborepo with clean working tree, `vibeci verify --diff` completes in **40 milliseconds**.
+*The goal is to reduce unnecessary work while preserving trustworthy feedback.*
 
----
-
-## 🛡️ Automated Pre-Push Hook (`vibeci hook install`)
-
-Never accidentally push broken code, secret leaks, or missing environment variables to GitHub again:
-
-```bash
-# Install automated pre-push hook (1 command)
-vibeci hook install
-
-# Check hook status
-vibeci hook status
-
-# Remove hook
-vibeci hook remove
-```
-
-Once installed, running `git push` automatically runs VibeCI change-aware verification and blocks the push if any defects are detected.
+> **Important:** Change-aware verification is not equivalent to proving that only changed files can contain regressions. Shared dependencies and indirect effects may require broader checks.
 
 ---
 
 ## 🤖 AI Agent Integration
 
-Instruct your AI coding agent (Cursor, Claude Code, Copilot, Antigravity) to verify its work automatically:
+VibeCI is designed to fit directly into the development workflow of AI coding assistants (Cursor, Claude Code, Copilot, Antigravity).
 
-> *"After making code changes, run `vibeci verify --diff --json`. If any checks fail or have warnings, inspect the `failure_details`, `file_locations`, and `summary` in the JSON report, fix the issues, and rerun `vibeci verify --diff --json`."*
+After making code changes, an agent can run:
 
-See the [AI Agent Integration Guide](docs/AGENT_INTEGRATION.md) for ready-to-use `.cursorrules` and `CLAUDE.md` snippets.
-
----
-
-## 📋 Real-World Verification Report
-
-Below is actual output produced by VibeCI on a production Next.js/Turborepo project:
-
-```
-╭──────────────────────────────────────────────────────────────────────────────╮
-│ ⚡ VibeCI • Local Verification for AI-Written Code                           │
-│ Project: Park Conscious  |  Ecosystem: javascript                            │
-╰──────────────────────────────────────────────────────────────────────────────╯
-  ⚠ WARNING  env:preflight      env          4.13s  119 referenced env vars missing from .env.example
-  ✘ FAILED  security:secrets   security     2.42s  Detected 2 potentially leaked secret(s) in source code
-  ✔ PASSED  npm:lint           lint         7.06s  Tasks: 1 successful, 1 total
-  ✔ PASSED  npm:build          build        9.39s  Tasks: 2 successful, 2 total
-  ✔ PASSED  npm:test:events    test         1.67s  Tasks: 1 successful, 1 total
-
-── What Needs Fixing? ───────────────────────────────────────────
-╭───────────────────────── [FAILED] security:secrets ──────────────────────────╮
-│ Issue: Detected 2 potentially leaked secret(s) in source code.               │
-│ Locations:                                                                   │
-│   • scratch/test_pending_email_direct.js:5 — Hardcoded database connection   │
-│   • scratch/test_pending_email_meetup.js:5 — Hardcoded database connection   │
-╰──────────────────────────────────────────────────────────────────────────────╯
-
-── Unverified Capabilities (Honest Boundaries) ─────────────────
-  ○ Database Integration        — Database drivers are installed, but no test DB was configured.
-  ○ External Third-Party APIs   — Live third-party API credentials were not exercised.
-  ○ End-to-End Browser Flows    — No browser automation tool configured.
-
-╭──────────────────────────────────────────────────────────────────────────────╮
-│ ✘ VERDICT: FAILED                                                            │
-│ 1 check(s) failed. Review evidence above or feed JSON to your AI agent.      │
-╰──── 3 Passed  •  1 Failed  •  1 Warnings  •  3 Not Checked  (in 24.67s) ─────╯
+```bash
+vibeci verify --diff --json
 ```
 
----
+It can then use the report to investigate failures and rerun verification after making a correction.
 
-## 🛠️ CLI Command Reference
+### Example Agent Instruction
 
-| Command | Flags | Description |
-| :--- | :--- | :--- |
-| `vibeci verify` | `--diff` / `--changed-only` | Verify only files modified in git diff. |
-| | `--since <ref>` | Compare changes against a git reference (e.g. `main`, `HEAD~1`). |
-| | `--no-build` | Skip production build compilation. |
-| | `--no-static` | Skip static health and environment preflight checks. |
-| | `--smoke` | Exercise application boot and runtime HTTP probing. |
-| | `--build-only` | Run only production build verification. |
-| | `--json` | Output machine-readable JSON for AI agents. |
-| | `--fail-fast` | Abort immediately on the first failed check. |
-| | `--timeout <sec>` | Set maximum execution duration per check. |
-| `vibeci hook` | `install` / `remove` / `status` | Manage automated git pre-push verification guard. |
-| `vibeci check` | `--failed-only` / `--only <name>` | Legacy task runner interface. |
-| `vibeci doctor` | | Inspect environment, virtualenvs, and detected tools. |
-| `vibeci init` | | Generate a `.vibeci.toml` configuration file. |
+Add the following instruction to your coding agent's project rules (e.g. `.cursorrules`, `CLAUDE.md`, or your agent's system prompt):
+
+> *"After modifying code, run `vibeci verify --diff --json` before declaring the task complete. Inspect the structured report, fix actionable failures where appropriate, and rerun the relevant checks. Do not claim that the project is fully verified if checks failed, were skipped, or could not run. Do not weaken or remove tests simply to obtain a passing result. Summarize what passed and what remains unverified."*
+
+See the [AI Agent Integration Guide](docs/AGENT_INTEGRATION.md) for project-specific integration instructions.
 
 ---
 
-## 🔒 Privacy & Local-First Guarantee
+## 🛡️ Automated Pre-Push Verification
 
-- **100% Local:** VibeCI makes **zero network calls**.
-- **No Telemetry:** No code, error snippets, or metadata leaves your laptop.
-- **Safe Execution:** Subprocesses are sandboxed with process group isolation and strict timeouts.
+VibeCI supports automated Git hook management:
+
+```bash
+# Install the pre-push hook
+vibeci hook install
+
+# Inspect hook status
+vibeci hook status
+
+# Remove the hook
+vibeci hook remove
+```
+
+A configured pre-push hook runs verification before Git pushes changes to a remote repository and rejects the push when configured checks fail.
+
+> **Note:** Hooks are a useful final guard, but they can be bypassed and cannot guarantee that code is safe or correct. Remote CI and production monitoring remain important.
+
+---
+
+## 🛠️ CLI Reference
+
+| Command | Purpose |
+| :--- | :--- |
+| `vibeci verify` | Run applicable verification checks |
+| `vibeci verify --json` | Return a machine-readable JSON report for AI agents |
+| `vibeci verify --diff` | Enable change-aware verification for git-modified files |
+| `vibeci verify --since <ref>` | Compare changes against a Git reference (`main`, `HEAD~1`) |
+| `vibeci verify --no-build` | Skip production build checks |
+| `vibeci verify --no-static` | Skip static and environment preflight checks |
+| `vibeci verify --smoke` | Enable supported runtime smoke checks |
+| `vibeci verify --build-only` | Run build verification only |
+| `vibeci verify --fail-fast` | Stop immediately after the first failure |
+| `vibeci verify --timeout <sec>` | Set the maximum duration per check |
+| `vibeci hook install` | Install the automated git pre-push hook |
+| `vibeci hook status` | Inspect pre-push hook status |
+| `vibeci hook remove` | Remove the git pre-push hook |
+| `vibeci doctor` | Inspect the local environment, virtualenvs, and available tools |
+| `vibeci init` | Generate a `.vibeci.toml` configuration file |
+
+*Run `vibeci verify --help` to see all supported flags.*
+
+---
+
+## 🎯 Design Principles
+
+- **Local-first:** Verification runs on your machine using the tools available to your project with zero network overhead.
+- **Agent-native:** Structured JSON output makes verification results directly consumable by coding agents.
+- **Reuse, don't reinvent:** VibeCI coordinates existing testing, build, and analysis tools rather than replacing them.
+- **Fast feedback:** Change-aware execution and selective check running reduce unnecessary waiting.
+- **Honest results:** Passed, failed, skipped, and unverified checks remain distinct without fake confidence scores.
+- **Beginner-friendly:** A single verification workflow that works with zero initial configuration.
+
+---
+
+## 🔒 Privacy and Security
+
+- **100% Local:** VibeCI is designed for local verification with zero cloud telemetry or hosted backends.
+- **No Data Leaks:** No source code, error snippets, or reports leave your computer.
+- **Redaction:** Potential secrets detected during scanning are safeguarded from full diagnostic exposure.
+- **Controlled Execution:** Subprocess timeouts and process group management prevent hanging or orphaned processes.
+
+See the [Architecture Specification](docs/ARCHITECTURE.md) for implementation details.
 
 ---
 
 ## 📖 Documentation
 
-- [Architecture & Technical Specification](docs/ARCHITECTURE.md)
-- [AI Agent Integration Guide (Cursor / Claude Code / Copilot)](docs/AGENT_INTEGRATION.md)
+- [Architecture and Technical Specification](docs/ARCHITECTURE.md)
+- [AI Agent Integration Guide](docs/AGENT_INTEGRATION.md)
 - [Contributing Guide](docs/CONTRIBUTING.md)
-- [Vision & Product Definition](VISION.md)
+- [Product Vision](VISION.md)
+
+---
+
+## 🤝 Contributing
+
+VibeCI is open source, and contributions are welcome. Useful contributions include bug reports, reproducible failure cases, new verification adapters, performance benchmarks, cross-platform fixes, and improvements to verification reports.
+
+Please review the [Contributing Guide](docs/CONTRIBUTING.md) before submitting a pull request.
 
 ---
 
 ## 🛡️ License
 
-[MIT](LICENSE) © 2026 Piyush Kumar
+Released under the [MIT License](LICENSE). © 2026 Piyush Kumar.
+
+<p align="center">
+  <strong>Your AI writes the code. VibeCI helps you verify it before you push.</strong>
+</p>
