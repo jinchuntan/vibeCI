@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import time
@@ -52,26 +53,39 @@ class CheckRunner:
         env["WATCH"] = "false"
         env["NODE_ENV"] = env.get("NODE_ENV", "test")
 
+        # Resolve command executable across OS (e.g. npm.cmd on Windows)
+        cmd = list(check.command)
+        if cmd and not Path(cmd[0]).is_file():
+            resolved = shutil.which(cmd[0])
+            if resolved:
+                cmd[0] = resolved
+
+        # Windows start_new_session / creationflags handling
+        popen_kwargs: dict = {
+            "cwd": str(cwd),
+            "stdin": subprocess.DEVNULL,
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.PIPE,
+            "text": True,
+            "env": env,
+        }
+        if os.name != "nt":
+            popen_kwargs["start_new_session"] = True
+
         try:
             # Run process with stdin closed to prevent interactive prompt hanging
-            proc = subprocess.Popen(
-                check.command,
-                cwd=str(cwd),
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                env=env,
-                start_new_session=True,
-            )
+            proc = subprocess.Popen(cmd, **popen_kwargs)
             try:
                 stdout, stderr = proc.communicate(timeout=timeout)
                 exit_code = proc.returncode
                 status = CheckStatus.PASSED if exit_code == 0 else CheckStatus.FAILED
             except subprocess.TimeoutExpired:
-                # Terminate the entire process tree
+                # Terminate the entire process tree across OS
                 try:
-                    os.killpg(proc.pid, signal.SIGKILL)
+                    if hasattr(os, "killpg"):
+                        os.killpg(proc.pid, signal.SIGKILL)
+                    else:
+                        proc.kill()
                 except Exception:
                     proc.kill()
                 try:

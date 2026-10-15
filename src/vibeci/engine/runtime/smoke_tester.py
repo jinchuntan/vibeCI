@@ -194,13 +194,20 @@ class RuntimeSmokeTester:
             )
 
         finally:
-            # Always ensure clean shutdown of the process group
+            # Always ensure clean shutdown of the process group across OS
             if proc and proc.poll() is None:
                 try:
-                    os.killpg(proc.pid, signal.SIGTERM)
-                    proc.wait(timeout=3)
+                    if hasattr(os, "killpg"):
+                        os.killpg(proc.pid, signal.SIGTERM)
+                        proc.wait(timeout=3)
+                    else:
+                        proc.terminate()
+                        proc.wait(timeout=3)
                 except Exception:
                     try:
-                        os.killpg(proc.pid, signal.SIGKILL)
+                        if hasattr(os, "killpg"):
+                            os.killpg(proc.pid, signal.SIGKILL)
+                        else:
+                            proc.kill()
                     except Exception:
                         pass

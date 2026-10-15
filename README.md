@@ -90,14 +90,25 @@ Most AI-generated projects have **few or zero unit tests**. Standard test runner
 
 ### Installation
 
-Install globally using `uv` (recommended) or `pip`:
+VibeCI is fully cross-platform and runs natively on **macOS**, **Linux**, and **Windows** (PowerShell, Command Prompt, or WSL).
 
+#### Using `uv` (Recommended, All Operating Systems):
 ```bash
-# Using uv (fastest)
+# macOS, Linux, and Windows:
 uv tool install vibeci
+```
 
-# Or with pip
+#### Using `pip` / `pipx`:
+```bash
+# macOS & Linux:
+pip install vibeci
+# or install from source locally:
 pip install -e .
+
+# Windows (PowerShell / Command Prompt):
+python -m pip install vibeci
+# or install from source locally:
+python -m pip install -e .
 ```
 
 ### Run Verification
