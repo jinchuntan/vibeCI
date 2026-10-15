@@ -16,7 +16,7 @@ from vibeci.formatters.json_output import format_json_report
 from vibeci.models import OverallStatus, VerificationReport
 from vibeci.runner import CheckRunner
 
-VERSION = "0.2.2"
+VERSION = "0.3.0"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -180,6 +180,33 @@ def build_parser() -> argparse.ArgumentParser:
         help="Action to perform: install, remove, or status",
     )
     hook_parser.add_argument(
+        "-C",
+        "--project-dir",
+        type=str,
+        default=".",
+        help="Target project directory (default: current directory)",
+    )
+
+    # Command: rule (Configure AI agent verification rules)
+    rule_parser = subparsers.add_parser(
+        "rule",
+        aliases=["rules"],
+        help="Configure AI coding agents (Cursor, Claude Code, Copilot) to automatically run VibeCI after changes",
+    )
+    rule_parser.add_argument(
+        "action",
+        nargs="?",
+        default="install",
+        choices=["install", "print", "status"],
+        help="Action to perform: install (default), print, or status",
+    )
+    rule_parser.add_argument(
+        "--agent",
+        choices=["all", "cursor", "claude", "copilot", "universal"],
+        default="all",
+        help="Target AI assistant: all (default), cursor, claude, copilot, or universal",
+    )
+    rule_parser.add_argument(
         "-C",
         "--project-dir",
         type=str,
@@ -437,6 +464,43 @@ def handle_hook(args: argparse.Namespace) -> int:
     return 0
 
 
+def handle_rule(args: argparse.Namespace) -> int:
+    from vibeci.rules import VIBECI_RULE_CONTENT, get_rule_status, install_rules
+
+    root_dir = Path(args.project_dir).resolve()
+    action = getattr(args, "action", "install") or "install"
+    agent = getattr(args, "agent", "all")
+
+    if action == "print":
+        print(VIBECI_RULE_CONTENT)
+        return 0
+
+    if action == "status":
+        print(f"\n🤖 VibeCI AI Agent Rules Status ({root_dir.name}):")
+        statuses = get_rule_status(root_dir)
+        for name, active in statuses.items():
+            mark = "[✓] Active" if active else "[ ] Not configured"
+            print(f"  • {name:32} : {mark}")
+        print()
+        return 0
+
+    if action == "install":
+        installed = install_rules(root_dir, agent=agent)
+        if installed:
+            print("\n✔ Successfully configured VibeCI AI verification rules:")
+            for f in installed:
+                print(f"  • {f}")
+            print("\n🤖 Your AI coding assistant will now automatically:")
+            print("  1. Run `vibeci verify --diff --json` after creating or editing code.")
+            print("  2. Inspect the JSON report for exact error locations and secret leaks.")
+            print("  3. Self-heal and rerun verification before finishing.\n")
+        else:
+            print("\n○ All selected AI rule files are already configured with VibeCI instructions.\n")
+        return 0
+
+    return 0
+
+
 def main(argv: Optional[list[str]] = None) -> None:
     try:
         parser = build_parser()
@@ -456,6 +520,8 @@ def main(argv: Optional[list[str]] = None) -> None:
             sys.exit(handle_doctor(args))
         elif args.command == "hook":
             sys.exit(handle_hook(args))
+        elif args.command in ("rule", "rules"):
+            sys.exit(handle_rule(args))
         else:
             parser.print_help()
             sys.exit(0)

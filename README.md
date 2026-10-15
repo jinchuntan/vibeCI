@@ -205,23 +205,31 @@ vibeci verify --diff --since HEAD~1
 
 ## 🤖 AI Agent Integration
 
-VibeCI is designed to fit directly into the development workflow of AI coding assistants (Cursor, Claude Code, Copilot, Antigravity).
+VibeCI is designed to fit directly into the development workflow of AI coding assistants (Cursor, Claude Code, GitHub Copilot, Codex, Antigravity).
 
-After making code changes, an agent can run:
+### ⚡ 1-Command AI Rule Setup (`vibeci rule`)
+
+Configure your AI coding assistant to automatically run VibeCI after changes and read the structured JSON report with a single command:
 
 ```bash
-vibeci verify --diff --json
+# Configure rules for all AI assistants (.cursorrules, CLAUDE.md, .github/copilot-instructions.md, AGENTS.md)
+vibeci rule
+
+# Or target a specific assistant
+vibeci rule --agent cursor
+vibeci rule --agent claude
+vibeci rule --agent copilot
+
+# Check rule status across your project
+vibeci rule status
 ```
 
-It can then use the report to investigate failures and rerun verification after making a correction.
+Once installed, your AI assistant will automatically:
+1. Run `vibeci verify --diff --json` after creating or editing files.
+2. Read the structured JSON output (`status`, `file_locations`, and `failure_details`).
+3. Automatically self-heal errors, fix secret leaks, and re-verify before declaring tasks complete.
 
-### Example Agent Instruction
-
-Add the following instruction to your coding agent's project rules (e.g. `.cursorrules`, `CLAUDE.md`, or your agent's system prompt):
-
-> *"After modifying code, run `vibeci verify --diff --json` before declaring the task complete. Inspect the structured report, fix actionable failures where appropriate, and rerun the relevant checks. Do not claim that the project is fully verified if checks failed, were skipped, or could not run. Do not weaken or remove tests simply to obtain a passing result. Summarize what passed and what remains unverified."*
-
-See the [AI Agent Integration Guide](docs/AGENT_INTEGRATION.md) for project-specific integration instructions.
+See the [AI Agent Integration Guide](docs/AGENT_INTEGRATION.md) for deeper details and schemas.
 
 ---
 
@@ -260,6 +268,9 @@ A configured pre-push hook runs verification before Git pushes changes to a remo
 | `vibeci verify --build-only` | Run build verification only |
 | `vibeci verify --fail-fast` | Stop immediately after the first failure |
 | `vibeci verify --timeout <sec>` | Set the maximum duration per check |
+| `vibeci rule` | Automatically install verification rules for AI coding assistants |
+| `vibeci rule status` | Check which AI assistant rules are configured in the project |
+| `vibeci rule print` | Print the raw AI verification prompt protocol to stdout |
 | `vibeci hook install` | Install the automated git pre-push hook |
 | `vibeci hook status` | Inspect pre-push hook status |
 | `vibeci hook remove` | Remove the git pre-push hook |
