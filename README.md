@@ -80,7 +80,17 @@ vibeci
 
 VibeCI discovers applicable checks, executes them, and summarizes the results.
 
-### 3. Get Results Your AI Can Use
+### 3. Automate It For Your AI (`vibeci rule`)
+
+Never worry about forgetting to run verification. Run this once in your project root:
+
+```bash
+vibeci rule
+```
+
+This automatically configures your AI assistant (`.cursorrules`, `CLAUDE.md`, `.github/copilot-instructions.md`, `AGENTS.md`) to **always verify code changes with VibeCI** and inspect the structured JSON report to self-heal errors before finishing tasks.
+
+### 4. Get Results Your AI Can Use
 
 ```bash
 vibeci verify --json
@@ -88,7 +98,7 @@ vibeci verify --json
 
 Use the structured report to help your coding agent identify failures, understand their exact `file:line:col` locations, and verify fixes automatically.
 
-> **Tip:** Run VibeCI after an AI-generated change and before pushing it. Add automatic verification to your agent workflow once you've confirmed the commands and checks are appropriate for your project.
+> **Tip:** Install the automated Git pre-push hook with `vibeci hook install` to guarantee that unverified or broken code can never be pushed to your remote repository.
 
 ---
 
