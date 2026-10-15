@@ -15,3 +15,11 @@ wheels/
 # Test caches
 .pytest_cache/
 .coverage
+
+# Node / Frontend
+node_modules/
+website/dist/
+.vite/
+
+# OS
+.DS_Store
