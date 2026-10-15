@@ -119,7 +119,7 @@ class CheckResult:
 
 @dataclass
 class VerificationReport:
-    version: str = "0.2.0"
+    version: str = "0.3.0"
     status: OverallStatus = OverallStatus.PASSED
     project_name: str = ""
     project_type: str = "unknown"
