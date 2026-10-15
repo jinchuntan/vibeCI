@@ -24,7 +24,14 @@ SECRET_PATTERNS = [
     (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "Hardcoded AWS Access Key ID"),
     (re.compile(r"\bghp_[0-9a-zA-Z]{36}\b"), "Hardcoded GitHub Personal Access Token"),
     (re.compile(r"\bglpat-[0-9a-zA-Z\-_]{20}\b"), "Hardcoded GitLab Personal Access Token"),
+    (re.compile(r"\bsk-proj-[A-Za-z0-9_-]{48,}\b"), "Hardcoded OpenAI Project API Key"),
     (re.compile(r"\bsk-(?:live-)?[0-9a-zA-Z]{24,}\b"), "Hardcoded OpenAI / API secret key"),
+    (re.compile(r"\bsk-ant-api03-[A-Za-z0-9_-]{80,}\b"), "Hardcoded Anthropic Claude API Key"),
+    (re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b"), "Hardcoded Google API / Gemini Key"),
+    (re.compile(r"\bhf_[A-Za-z0-9]{34,}\b"), "Hardcoded Hugging Face Token"),
+    (re.compile(r"\b(?:sk|rk)_live_[0-9a-zA-Z]{24,}\b"), "Hardcoded Stripe Live Secret Key"),
+    (re.compile(r"https:\/\/hooks\.slack\.com\/services\/T[0-9A-Z]+\/B[0-9A-Z]+\/[0-9a-zA-Z]+"), "Hardcoded Slack Incoming Webhook URL"),
+    (re.compile(r"\bxox[baprs]-[0-9a-zA-Z]{10,48}\b"), "Hardcoded Slack Bot / Access Token"),
     (re.compile(r"\b(?:mongodb(?:\+srv)?|postgres(?:ql)?|mysql):\/\/[a-zA-Z0-9_\-\.]+:[a-zA-Z0-9_\-\.\@!#$%^&*()+=~]+@[a-zA-Z0-9_\-\.]+"), "Hardcoded database connection string with password"),
 ]
 

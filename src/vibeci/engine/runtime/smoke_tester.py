@@ -41,8 +41,17 @@ class RuntimeSmokeTester:
     def __init__(self, root_dir: Path):
         self.root_dir = root_dir.resolve()
 
+    def _resolve_python(self) -> str:
+        import sys
+        for venv_name in (".venv", "venv", "env"):
+            py_bin = self.root_dir / venv_name / "bin" / "python"
+            if py_bin.exists():
+                return str(py_bin)
+        return sys.executable
+
     def detect_start_command(self) -> Optional[tuple[list[str], int]]:
         """Detect (command_list, target_port)."""
+        # 1. JavaScript / TypeScript (package.json)
         pkg_json = self.root_dir / "package.json"
         if pkg_json.exists():
             try:
@@ -51,10 +60,33 @@ class RuntimeSmokeTester:
                 # Look for preview or start first, then dev
                 for s in ("start", "preview", "serve", "dev:local", "dev"):
                     if s in scripts:
-                        # Standard node port
                         return ["npm", "run", s], 3000
             except Exception:
                 pass
+
+        # 2. Python Web Frameworks (FastAPI, Flask, Django)
+        py = self._resolve_python()
+
+        # Django
+        if (self.root_dir / "manage.py").exists():
+            return [py, "manage.py", "runserver", "8000", "--noreload"], 8000
+
+        # FastAPI / Flask / Generic entry points
+        for entry_file in ("main.py", "app.py", "server.py", "wsgi.py", "asgi.py"):
+            entry_path = self.root_dir / entry_file
+            if entry_path.exists():
+                try:
+                    content = entry_path.read_text(encoding="utf-8", errors="ignore")
+                    module_name = entry_path.stem
+                    if "fastapi" in content.lower():
+                        return [py, "-m", "uvicorn", f"{module_name}:app", "--port", "8000"], 8000
+                    elif "flask" in content.lower():
+                        return [py, entry_file], 5000
+                    elif "uvicorn.run" in content:
+                        return [py, entry_file], 8000
+                except Exception:
+                    pass
+
         return None
 
     def run_smoke_test(

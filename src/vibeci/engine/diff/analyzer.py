@@ -124,7 +124,19 @@ class GitChangeAnalyzer:
         for f in valid_files:
             stem = f.stem
             # If already a test file, include it (only source code files)
-            if ("test" in stem or "spec" in stem) and f.suffix in (".py", ".js", ".jsx", ".ts", ".tsx"):
+            is_test_file = False
+            if f.suffix == ".py":
+                if stem.startswith("test_") or stem.endswith("_test") or "tests" in f.parts:
+                    is_test_file = True
+            elif f.suffix in (".js", ".jsx", ".ts", ".tsx", ".mjs"):
+                if (
+                    any(f.name.endswith(ext) for ext in (".test.js", ".test.jsx", ".test.ts", ".test.tsx", ".spec.js", ".spec.ts", ".spec.jsx", ".spec.tsx"))
+                    or "tests" in f.parts
+                    or "__tests__" in f.parts
+                ):
+                    is_test_file = True
+
+            if is_test_file:
                 related_tests.append(f)
                 continue
 
@@ -135,10 +147,22 @@ class GitChangeAnalyzer:
                 if candidate.exists():
                     related_tests.append(candidate)
 
+            if f.suffix == ".py":
+                for candidate in (parent / f"test_{stem}.py", parent / f"{stem}_test.py"):
+                    if candidate.exists():
+                        related_tests.append(candidate)
+
             # Look in nearby tests/ directory
             tests_dir = parent / "tests"
             if tests_dir.is_dir():
                 for candidate in tests_dir.glob(f"*{stem}*"):
+                    if candidate.is_file():
+                        related_tests.append(candidate)
+
+            # Look in project root tests/ directory
+            root_tests = self.root_dir / "tests"
+            if root_tests.is_dir():
+                for candidate in root_tests.glob(f"*{stem}*"):
                     if candidate.is_file():
                         related_tests.append(candidate)
 

@@ -27,9 +27,11 @@ STANDARD_ENV_VARS = {
 }
 
 # Regex for process.env.VAR_NAME or process.env["VAR_NAME"]
-JS_ENV_PATTERN = re.compile(r"process\.env(?:\.([A-Z0-9_]+)|\[['\"]([A-Z0-9_]+)['\"]\])")
+JS_ENV_PATTERN = re.compile(r"process\.env(?:\.([A-Za-z0-9_]+)|\[['\"]([A-Za-z0-9_]+)['\"]\])")
+# Regex for Vite / modern bundler: import.meta.env.VITE_VAR or import.meta.env["VITE_VAR"]
+VITE_ENV_PATTERN = re.compile(r"import\.meta\.env(?:\.([A-Za-z0-9_]+)|\[['\"]([A-Za-z0-9_]+)['\"]\])")
 # Regex for os.environ["VAR_NAME"], os.environ.get("VAR_NAME"), os.getenv("VAR_NAME")
-PY_ENV_PATTERN = re.compile(r"(?:os\.environ(?:\.get)?|os\.getenv)\(['\"]([A-Z0-9_]+)['\"]")
+PY_ENV_PATTERN = re.compile(r"(?:os\.environ(?:\.get)?|os\.getenv)\(['\"]([A-Za-z0-9_]+)['\"]|os\.environ\[['\"]([A-Za-z0-9_]+)['\"]\]")
 
 
 def parse_env_file(filepath: Path) -> set[str]:
@@ -60,12 +62,25 @@ class EnvAuditor:
     def audit(self, target_files: Optional[list[Path]] = None) -> CheckResult:
         start_time = time.perf_counter()
 
-        # 1. Gather declared environment variables from .env.example, .env, .env.local
-        example_vars = parse_env_file(self.root_dir / ".env.example")
-        local_vars = parse_env_file(self.root_dir / ".env") | parse_env_file(self.root_dir / ".env.local")
-        declared_vars = example_vars | local_vars | STANDARD_ENV_VARS
+        # 1. Gather declared environment variables from .env.example, .env.sample, .env.template, .env, .env.local
+        example_candidates = [".env.example", ".env.sample", ".env.template", ".env.dist"]
+        example_vars: set[str] = set()
+        has_env_example = False
+        primary_example_name = ".env.example"
 
-        has_env_example = (self.root_dir / ".env.example").exists()
+        for candidate in example_candidates:
+            cand_path = self.root_dir / candidate
+            if cand_path.exists():
+                has_env_example = True
+                primary_example_name = candidate
+                example_vars |= parse_env_file(cand_path)
+
+        local_vars = (
+            parse_env_file(self.root_dir / ".env")
+            | parse_env_file(self.root_dir / ".env.local")
+            | parse_env_file(self.root_dir / ".env.development")
+        )
+        declared_vars = example_vars | local_vars | STANDARD_ENV_VARS
 
         # 2. Scan source files for env var references
         referenced_vars: dict[str, list[FileLocation]] = {}
@@ -74,7 +89,7 @@ class EnvAuditor:
             "coverage", ".turbo", ".cache", "__pycache__",
         }
 
-        extensions = {".js", ".jsx", ".ts", ".tsx", ".py", ".mjs"}
+        extensions = {".js", ".jsx", ".ts", ".tsx", ".py", ".mjs", ".svelte", ".vue", ".astro"}
         files_to_scan = target_files if target_files is not None else self.root_dir.rglob("*")
 
         for path in files_to_scan:
@@ -89,16 +104,23 @@ class EnvAuditor:
 
                 lines = content.splitlines()
                 for line_idx, line in enumerate(lines, start=1):
-                    # Check JS/TS
+                    # Check JS/TS process.env
                     for m in JS_ENV_PATTERN.finditer(line):
                         var_name = m.group(1) or m.group(2)
                         if var_name and not var_name.startswith("_"):
                             referenced_vars.setdefault(var_name, []).append(
                                 FileLocation(file=rel_path, line=line_idx, message=f"References process.env.{var_name}")
                             )
-                    # Check Python
+                    # Check Vite / modern import.meta.env
+                    for m in VITE_ENV_PATTERN.finditer(line):
+                        var_name = m.group(1) or m.group(2)
+                        if var_name and not var_name.startswith("_"):
+                            referenced_vars.setdefault(var_name, []).append(
+                                FileLocation(file=rel_path, line=line_idx, message=f"References import.meta.env.{var_name}")
+                            )
+                    # Check Python os.environ / os.getenv
                     for m in PY_ENV_PATTERN.finditer(line):
-                        var_name = m.group(1)
+                        var_name = m.group(1) or m.group(2)
                         if var_name and not var_name.startswith("_"):
                             referenced_vars.setdefault(var_name, []).append(
                                 FileLocation(file=rel_path, line=line_idx, message=f"References os.getenv('{var_name}')")
@@ -129,7 +151,7 @@ class EnvAuditor:
             for var, locs in missing_from_example.items():
                 first_loc = locs[0]
                 failure_details.append(
-                    f"`{var}` is referenced in code ({first_loc.file}:{first_loc.line or ''}) but missing from .env.example."
+                    f"`{var}` is referenced in code ({first_loc.file}:{first_loc.line or ''}) but missing from {primary_example_name}."
                 )
                 file_locations.extend(locs[:2])
 
@@ -139,7 +161,7 @@ class EnvAuditor:
         if missing_from_example:
             # If an env var is completely missing from example, mark as WARNING so AI/human can fix it
             status = CheckStatus.WARNING
-            summary = f"{len(missing_from_example)} referenced environment variable(s) missing from .env.example."
+            summary = f"{len(missing_from_example)} referenced environment variable(s) missing from {primary_example_name}."
         elif not has_env_example and not local_vars and not referenced_vars:
             summary = "No environment variables referenced."
         else:

@@ -45,20 +45,22 @@ class VerificationEngine:
         """Honest accounting of critical software capabilities that could not be verified."""
         unverified: list[UnverifiedCapability] = []
 
+        pkg_json = self.root_dir / "package.json"
+        pyproject = self.root_dir / "pyproject.toml"
+        req_txt = self.root_dir / "requirements.txt"
+
+        pkg_content = pkg_json.read_text(encoding="utf-8", errors="ignore").lower() if pkg_json.exists() else ""
+        pyproject_content = pyproject.read_text(encoding="utf-8", errors="ignore").lower() if pyproject.exists() else ""
+        req_content = req_txt.read_text(encoding="utf-8", errors="ignore").lower() if req_txt.exists() else ""
+        all_deps = f"{pkg_content}\n{pyproject_content}\n{req_content}"
+
         # 1. Database integration check
         has_db_test = any("db" in c.name.lower() or "database" in c.name.lower() for c in checks)
-        # Check if project references MongoDB / Postgres / Prisma / TypeORM
-        has_db_deps = False
-        pkg_json = self.root_dir / "package.json"
-        if pkg_json.exists():
-            content = pkg_json.read_text(encoding="utf-8", errors="ignore")
-            if any(kw in content for kw in ("mongoose", "mongodb", "pg", "prisma", "typeorm", "sqlite")):
-                has_db_deps = True
-        pyproject = self.root_dir / "pyproject.toml"
-        if pyproject.exists():
-            content = pyproject.read_text(encoding="utf-8", errors="ignore")
-            if any(kw in content for kw in ("sqlalchemy", "django", "tortoise", "psycopg", "motor")):
-                has_db_deps = True
+        db_keywords = (
+            "mongoose", "mongodb", "pg", "prisma", "typeorm", "sqlite",
+            "sqlalchemy", "django", "tortoise", "psycopg", "motor", "mysql", "redis"
+        )
+        has_db_deps = any(kw in all_deps for kw in db_keywords)
 
         if has_db_deps and not has_db_test:
             unverified.append(
@@ -68,17 +70,30 @@ class VerificationEngine:
                 )
             )
 
-        # 2. Live 3rd-party APIs (Stripe, Razorpay, WhatsApp, Resend)
-        unverified.append(
-            UnverifiedCapability(
-                name="External Third-Party APIs",
-                reason="Live third-party API credentials (payment gateways, messaging) were not exercised.",
-            )
+        # 2. Live 3rd-party APIs (Stripe, Razorpay, WhatsApp, Resend, AI APIs, etc.)
+        api_keywords = (
+            "stripe", "razorpay", "twilio", "resend", "sendgrid", "openai",
+            "anthropic", "google-generativeai", "boto3", "aws-sdk", "firebase",
+            "supabase", "axios", "requests", "httpx", "aiohttp", "node-fetch", "got"
         )
+        has_api_deps = any(kw in all_deps for kw in api_keywords)
+        if has_api_deps:
+            unverified.append(
+                UnverifiedCapability(
+                    name="External Third-Party APIs",
+                    reason="Live third-party API credentials (payment gateways, messaging, AI services) were not exercised.",
+                )
+            )
 
         # 3. End-to-End Browser UI Flows
         has_playwright = any("playwright" in c.name.lower() or "cypress" in c.name.lower() for c in checks)
-        if not has_playwright:
+        frontend_keywords = ("react", "vue", "svelte", "next", "nuxt", "vite", "angular", "astro", "solid-js")
+        has_frontend = any(kw in all_deps for kw in frontend_keywords)
+        if not has_frontend:
+            if any(self.root_dir.glob("*.html")) or any((self.root_dir / "public").glob("*.html")) or any((self.root_dir / "src").glob("*.html")):
+                has_frontend = True
+
+        if has_frontend and not has_playwright:
             unverified.append(
                 UnverifiedCapability(
                     name="End-to-End Browser Flows",
@@ -193,13 +208,15 @@ class VerificationEngine:
 
                 # Smart selective execution for changed files
                 if changed_only and change_info:
-                    # If we found specific related test files for Python
-                    if tc.name == "pytest" and change_info.related_test_files:
-                        test_paths = [str(p.relative_to(self.root_dir)) for p in change_info.related_test_files]
-                        tc.command = tc.command + test_paths
-                    elif tc.name == "pytest" and not change_info.related_test_files:
-                        # No Python test files modified or related, skip full suite
-                        continue
+                    has_py_changes = any(p.suffix == ".py" for p in change_info.files)
+                    if tc.name == "pytest":
+                        py_tests = [p for p in change_info.related_test_files if p.suffix == ".py"]
+                        if py_tests:
+                            test_paths = [str(p.relative_to(self.root_dir)) for p in py_tests]
+                            tc.command = tc.command + test_paths
+                        elif not has_py_changes:
+                            # No Python files modified or related, skip full suite
+                            continue
 
                 if on_start:
                     on_start(tc)
