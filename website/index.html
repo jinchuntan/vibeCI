@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Meta Tags -->
+  <title>VibeCI — Local Verification for AI-Written Code</title>
+  <meta name="title" content="VibeCI — Local Verification for AI-Written Code">
+  <meta name="description" content="VibeCI is an open-source, local-first verification engine for AI-written code. Catch secret leaks, missing env vars, build failures, and broken tests before you push. Sub-second diff mode for Cursor, Claude Code, Copilot, and Antigravity.">
+  <meta name="keywords" content="VibeCI, AI code verification, local CI, cursor rules, claude code, antigravity, github copilot, secret scanner, env audit, smoke testing, pytest, vitest, local verification">
+  <meta name="author" content="Piyush Kumar">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://vibeci.dev/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vibeci.dev/">
+  <meta property="og:title" content="VibeCI — Local Verification for AI-Written Code">
+  <meta property="og:description" content="Fast, local-first verification engine for AI-written code. 5 multi-layer checks, sub-second diff execution, and 1-command AI agent rule setup.">
+  <meta property="og:image" content="https://vibeci.dev/assets/terminal-agent-rules.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://vibeci.dev/">
+  <meta property="twitter:title" content="VibeCI — Local Verification for AI-Written Code">
+  <meta property="twitter:description" content="Verify AI-written code locally across static health, builds, tests, and runtime smoke before you push. Sub-second git diff mode.">
+  <meta property="twitter:image" content="https://vibeci.dev/assets/terminal-agent-rules.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Schema.org JSON-LD Structured Data for Google Indexing -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VibeCI",
+    "operatingSystem": "macOS, Linux, Windows",
+    "applicationCategory": "DeveloperApplication",
+    "applicationSubCategory": "Software Verification & CI/CD",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Local verification engine for AI-written code. Catch secret leaks, missing env vars, build failures, and broken tests before you push with sub-second diff mode.",
+    "url": "https://vibeci.dev",
+    "downloadUrl": "https://pypi.org/project/vibeci/",
+    "softwareVersion": "0.3.0",
+    "author": {
+      "@type": "Person",
+      "name": "Piyush Kumar",
+      "url": "https://github.com/piyush588"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Background Glow & Grid -->
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Header Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="brand-logo" aria-label="VibeCI Home">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">vibe<strong>CI</strong></span>
+        <span class="version-badge">v0.3.0</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#quickstart">Quick Start</a>
+        <a href="#layers">5 Layers</a>
+        <a href="#ai-agents">AI Rules</a>
+        <a href="https://github.com/piyush588/vibeCI" target="_blank" rel="noopener noreferrer" class="nav-github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero-section">
+      <div class="container hero-content">
+        <div class="pill-badge">
+          <span class="pill-dot"></span>
+          <span>Local-first software verification engine for AI coding agents</span>
+        </div>
+
+        <h1 class="hero-title">
+          Local Verification for <br>
+          <span class="gradient-text">AI-Written Code</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Your AI writes code at lightning speed. <strong>VibeCI</strong> makes sure it actually works before you push. Sub-second change-aware verification across 5 multi-layer checks.
+        </p>
+
+        <!-- Command Pill with live copy button -->
+        <div class="hero-cta-group">
+          <div class="install-bar" id="installBar" role="button" tabindex="0" title="Click to copy install command">
+            <span class="prompt-symbol">$</span>
+            <code class="install-code">uv tool install vibeci</code>
+            <button class="copy-btn" id="heroCopyBtn" aria-label="Copy install command">
+              <span class="copy-text">Copy</span>
+            </button>
+          </div>
+          <a href="#quickstart" class="btn btn-primary">Get Started</a>
+          <a href="https://github.com/piyush588/vibeCI" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            View on GitHub
+          </a>
+        </div>
+
+        <!-- Interactive Terminal Simulator -->
+        <div class="terminal-wrapper" id="terminalDemo">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="window-controls">
+                <span class="control close"></span>
+                <span class="control minimize"></span>
+                <span class="control maximize"></span>
+              </div>
+              <div class="terminal-tabs">
+                <button class="terminal-tab active" data-tab="verify">vibeci verify --diff</button>
+                <button class="terminal-tab" data-tab="rule">vibeci rule</button>
+                <button class="terminal-tab" data-tab="json">vibeci --json</button>
+              </div>
+              <div class="terminal-status">⚡ 0.28s</div>
+            </div>
+
+            <div class="terminal-body" id="terminalBody">
+              <!-- Content injected by script.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Showcase Section (Featuring Real User Workflows) -->
+    <section class="showcase-section" id="quickstart">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">QUICK START</div>
+          <h2 class="section-title">Up and running in 30 seconds</h2>
+          <p class="section-desc">Zero manual configuration required. VibeCI automatically discovers your ecosystem, tools, and virtual environments.</p>
+        </div>
+
+        <div class="showcase-grid">
+          <!-- Step 1 Card with Screenshot 1 -->
+          <article class="showcase-card">
+            <div class="card-badge">STEP 1 & 2</div>
+            <h3>Install & Verify with 1 Command</h3>
+            <p>Run <code>vibeci</code> to trigger full multi-layer verification, or <code>vibeci verify --diff</code> for sub-second change verification on active edits.</p>
+            
+            <div class="code-snippet-box">
+              <div class="snippet-header">
+                <span>TERMINAL</span>
+                <button class="snippet-copy" data-copy="uv tool install vibeci && vibeci verify">Copy</button>
+              </div>
+              <pre><code><span class="dim"># 1. Install globally via uv or pip</span>
+uv tool install vibeci
+
+<span class="dim"># 2. Run verification anywhere</span>
+vibeci verify --diff</code></pre>
+            </div>
+
+            <div class="screenshot-container">
+              <img src="assets/quickstart-guide.png" alt="VibeCI Quick Start Guide showing installation and verification steps" class="showcase-img" loading="lazy">
+            </div>
+          </article>
+
+          <!-- Step 2 Card with Screenshot 2 -->
+          <article class="showcase-card" id="ai-agents">
+            <div class="card-badge">STEP 3</div>
+            <h3>Lock AI Agents into Self-Healing Loops</h3>
+            <p>Running <code>vibeci rule</code> configures your AI assistant to run VibeCI after generating code, parse JSON diagnostics, and self-heal defects automatically.</p>
+
+            <div class="code-snippet-box">
+              <div class="snippet-header">
+                <span>TERMINAL</span>
+                <button class="snippet-copy" data-copy="vibeci rule">Copy</button>
+              </div>
+              <pre><code><span class="dim"># Configure Cursor, Claude Code, Copilot, & Antigravity</span>
+vibeci rule</code></pre>
+            </div>
+
+            <div class="screenshot-container">
+              <img src="assets/terminal-agent-rules.png" alt="Terminal output showing vibeci rule configuring AI agent verification rules" class="showcase-img" loading="lazy">
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- The 5 Verification Layers -->
+    <section class="layers-section" id="layers">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">MULTI-LAYER DEFENSE</div>
+          <h2 class="section-title">5 Layers of Software Verification</h2>
+          <p class="section-desc">AI models frequently introduce subtle configuration errors and security leaks. VibeCI catches what standard linters miss.</p>
+        </div>
+
+        <div class="layers-grid">
+          <div class="layer-card">
+            <div class="layer-num">LAYER 1</div>
+            <div class="layer-icon">🛡️</div>
+            <h4>Static Health & Secret Leak Detection</h4>
+            <p>Detects exposed OpenAI, Anthropic, Gemini, Stripe, and AWS credentials, along with undocumented environment variables referenced in code.</p>
+            <ul class="layer-features">
+              <li>OpenAI, Claude, Gemini & Stripe keys</li>
+              <li>Missing <code>.env.example</code> references</li>
+              <li>Supports Vite, Astro, SvelteKit & Python</li>
+            </ul>
+          </div>
+
+          <div class="layer-card">
+            <div class="layer-num">LAYER 2</div>
+            <div class="layer-icon">⚙️</div>
+            <h4>Production Build Verification</h4>
+            <p>Confirms your project compiles and packages clean production artifacts before code leaves your computer.</p>
+            <ul class="layer-features">
+              <li><code>npm run build</code>, <code>vite build</code>, <code>turbo</code></li>
+              <li><code>uv build</code>, wheel & sdist verification</li>
+              <li>Catches bundler & TypeScript breakage</li>
+            </ul>
+          </div>
+
+          <div class="layer-card">
+            <div class="layer-num">LAYER 3</div>
+            <div class="layer-icon">🧪</div>
+            <h4>Behavioral Test Suites</h4>
+            <p>Executes your existing unit and integration suites without hanging in interactive watch modes.</p>
+            <ul class="layer-features">
+              <li>Auto-detects <code>pytest</code>, <code>vitest</code>, <code>jest</code></li>
+              <li>Smart selective execution in <code>--diff</code> mode</li>
+              <li>Enforces strict timeouts & non-interactive flags</li>
+            </ul>
+          </div>
+
+          <div class="layer-card">
+            <div class="layer-num">LAYER 4</div>
+            <div class="layer-icon">🚀</div>
+            <h4>Runtime Boot & Smoke Testing</h4>
+            <p>Boots application processes in sandboxed groups to probe HTTP health endpoints without leaving dangling processes.</p>
+            <ul class="layer-features">
+              <li>FastAPI (<code>uvicorn</code>), Flask, Django auto-detection</li>
+              <li>Node / Next.js preview & start scripts</li>
+              <li>Probes readiness & validates <code>HTTP 200</code></li>
+            </ul>
+          </div>
+
+          <div class="layer-card highlight-card">
+            <div class="layer-num">LAYER 5</div>
+            <div class="layer-icon">⚖️</div>
+            <h4>Honest Boundary Accounting</h4>
+            <p>Unlike vanity tools that give fake 100% scores, VibeCI transparently reports critical systems that could not be verified.</p>
+            <ul class="layer-features">
+              <li>Flags unexercised database connections</li>
+              <li>Reports live third-party payment/messaging APIs</li>
+              <li>Highlights missing browser E2E automation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Assistants Supported -->
+    <section class="agents-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">ECOSYSTEM COMPATIBILITY</div>
+          <h2 class="section-title">Works with every AI coding assistant</h2>
+          <p class="section-desc">One command sets up native instructions for the tools you and your team already use.</p>
+        </div>
+
+        <div class="agent-badges">
+          <div class="agent-pill">
+            <span class="agent-icon">⚡</span>
+            <span>Cursor (<code>.cursorrules</code>)</span>
+          </div>
+          <div class="agent-pill">
+            <span class="agent-icon">🤖</span>
+            <span>Claude Code (<code>CLAUDE.md</code>)</span>
+          </div>
+          <div class="agent-pill">
+            <span class="agent-icon">🐙</span>
+            <span>GitHub Copilot (<code>copilot-instructions.md</code>)</span>
+          </div>
+          <div class="agent-pill">
+            <span class="agent-icon">🌌</span>
+            <span>Google Antigravity (<code>AGENTS.md</code>)</span>
+          </div>
+          <div class="agent-pill">
+            <span class="agent-icon">🛡️</span>
+            <span>Git Pre-Push Hook (<code>vibeci hook install</code>)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pre-Push Hook Callout -->
+    <section class="hook-section">
+      <div class="container">
+        <div class="hook-box">
+          <div class="hook-content">
+            <div class="section-tag">ZERO BROKEN COMMITS</div>
+            <h3>Never push broken AI code again</h3>
+            <p>Install the automated Git pre-push hook. If code fails verification, Git halts the push immediately before remote CI fails.</p>
+          </div>
+          <div class="hook-action">
+            <div class="code-pill">
+              <code>vibeci hook install</code>
+              <button class="copy-btn snippet-copy" data-copy="vibeci hook install">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="brand-logo">
+          <span class="logo-icon">⚡</span>
+          <span>vibe<strong>CI</strong></span>
+        </span>
+        <p class="footer-tagline">Local Verification for AI-Written Code.</p>
+        <p class="footer-license">Released under the MIT License. © 2026 Piyush Kumar.</p>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-col">
+          <h5>Project</h5>
+          <a href="https://github.com/piyush588/vibeCI" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+          <a href="https://pypi.org/project/vibeci/" target="_blank" rel="noopener noreferrer">PyPI Package</a>
+          <a href="https://github.com/piyush588/vibeCI/releases" target="_blank" rel="noopener noreferrer">Release Notes</a>
+        </div>
+        <div class="footer-col">
+          <h5>Documentation</h5>
+          <a href="https://github.com/piyush588/vibeCI/blob/main/README.md" target="_blank" rel="noopener noreferrer">Quickstart</a>
+          <a href="https://github.com/piyush588/vibeCI/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener noreferrer">Architecture Spec</a>
+          <a href="https://github.com/piyush588/vibeCI/blob/main/docs/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing Guide</a>
+          <a href="https://github.com/piyush588/vibeCI/blob/main/VISION.md" target="_blank" rel="noopener noreferrer">Product Vision</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
