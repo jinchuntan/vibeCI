@@ -3,8 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import json
+import re
 import shutil
+import subprocess
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import List, Optional
 
@@ -212,6 +217,35 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         default=".",
         help="Target project directory (default: current directory)",
+    )
+
+    # Command: upgrade
+    upgrade_parser = subparsers.add_parser(
+        "upgrade",
+        aliases=["update"],
+        help="Upgrade VibeCI to the latest version available on PyPI",
+    )
+    upgrade_parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Check if an update is available without installing it",
+    )
+    upgrade_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Display the upgrade command that would be executed",
+    )
+
+    # Command: help
+    help_parser = subparsers.add_parser(
+        "help",
+        help="Show help for VibeCI or a specific subcommand",
+    )
+    help_parser.add_argument(
+        "subcommand",
+        nargs="?",
+        default=None,
+        help="Subcommand to display help for (e.g. verify, check, doctor, rule, upgrade)",
     )
 
     return parser
@@ -501,14 +535,130 @@ def handle_rule(args: argparse.Namespace) -> int:
     return 0
 
 
+def parse_version_tuple(v: str) -> tuple[int, ...]:
+    parts = re.findall(r"\d+", v)
+    return tuple(int(p) for p in parts) if parts else (0,)
+
+
+def is_newer_version(current: str, candidate: str) -> bool:
+    return parse_version_tuple(candidate) > parse_version_tuple(current)
+
+
+def get_latest_pypi_version(package_name: str = "vibeci", timeout: float = 4.0) -> Optional[str]:
+    url = f"https://pypi.org/pypi/{package_name}/json"
+    req = urllib.request.Request(url, headers={"User-Agent": f"vibeci/{VERSION}"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return data.get("info", {}).get("version")
+    except Exception:
+        return None
+
+
+def get_upgrade_command() -> list[str]:
+    # Check if installed via pipx
+    if "pipx" in sys.prefix or "pipx" in sys.executable:
+        if shutil.which("pipx"):
+            return ["pipx", "upgrade", "vibeci"]
+
+    # Check if installed via uv tool
+    if "uv/tools" in sys.executable or ".local/share/uv/tools" in sys.executable:
+        if shutil.which("uv"):
+            return ["uv", "tool", "upgrade", "vibeci"]
+
+    # Check if uv is available and in virtual environment
+    if sys.prefix != sys.base_prefix and shutil.which("uv"):
+        return ["uv", "pip", "install", "--upgrade", "vibeci"]
+
+    # Default python -m pip
+    return [sys.executable, "-m", "pip", "install", "--upgrade", "vibeci"]
+
+
+def handle_help(parser: argparse.ArgumentParser, args: argparse.Namespace) -> int:
+    subcommand = getattr(args, "subcommand", None)
+    if not subcommand:
+        parser.print_help()
+        return 0
+
+    subparsers_actions = [
+        action for action in parser._actions
+        if isinstance(action, argparse._SubParsersAction)
+    ]
+    for sp_action in subparsers_actions:
+        if subcommand in sp_action.choices:
+            sp_action.choices[subcommand].print_help()
+            return 0
+
+    print(f"Unknown subcommand '{subcommand}'. Run 'vibeci help' for available commands.", file=sys.stderr)
+    return 1
+
+
+def handle_upgrade(args: argparse.Namespace) -> int:
+    print(f"Checking for VibeCI updates on PyPI (current: v{VERSION})...")
+    latest = get_latest_pypi_version("vibeci")
+
+    if not latest:
+        print("⚠ Could not check for updates from PyPI (network or timeout).")
+        print("You can manually upgrade with: pip install --upgrade vibeci")
+        return 1
+
+    if not is_newer_version(VERSION, latest):
+        print(f"✔ VibeCI is already up to date (version {VERSION}).")
+        return 0
+
+    print(f"⚡ New version available: v{VERSION} → v{latest}")
+    upgrade_cmd = get_upgrade_command()
+
+    if getattr(args, "check", False):
+        print(f"To upgrade, run: {' '.join(upgrade_cmd)}")
+        return 0
+
+    if getattr(args, "dry_run", False):
+        print(f"Would execute: {' '.join(upgrade_cmd)}")
+        return 0
+
+    print(f"Running upgrade: {' '.join(upgrade_cmd)} ...")
+    try:
+        proc = subprocess.run(upgrade_cmd, capture_output=True, text=True)
+        if proc.returncode == 0:
+            print(f"✔ Successfully upgraded VibeCI to version {latest}!")
+            return 0
+        else:
+            print(f"⚠ Automatic upgrade failed with exit code {proc.returncode}.")
+            if proc.stderr:
+                print(proc.stderr.strip(), file=sys.stderr)
+            print("Please run manually: pip install --upgrade vibeci", file=sys.stderr)
+            return proc.returncode
+    except Exception as e:
+        print(f"⚠ Failed to run upgrade command: {e}", file=sys.stderr)
+        print("Please run manually: pip install --upgrade vibeci", file=sys.stderr)
+        return 1
+
+
 def main(argv: Optional[list[str]] = None) -> None:
     try:
+        if argv is None:
+            raw_argv = sys.argv[1:]
+        else:
+            raw_argv = list(argv)
+
+        # Normalize common flags/typos to subcommands
+        normalized_argv: list[str] = []
+        for arg in raw_argv:
+            if arg in ("-upgrade", "--upgrade", "-updrade", "--updrade", "-update", "--update"):
+                normalized_argv.append("upgrade")
+            elif arg in ("-help",):
+                normalized_argv.append("help")
+            else:
+                normalized_argv.append(arg)
+        argv = normalized_argv
+
         parser = build_parser()
         args = parser.parse_args(argv)
 
         if not args.command:
             # Default action when invoked with no subcommand is 'verify'
-            args = parser.parse_args(["verify"] + (argv or sys.argv[1:]))
+            args = parser.parse_args(["verify"] + argv)
 
         if args.command == "verify":
             sys.exit(handle_verify(args))
@@ -522,6 +672,10 @@ def main(argv: Optional[list[str]] = None) -> None:
             sys.exit(handle_hook(args))
         elif args.command in ("rule", "rules"):
             sys.exit(handle_rule(args))
+        elif args.command in ("upgrade", "update"):
+            sys.exit(handle_upgrade(args))
+        elif args.command == "help":
+            sys.exit(handle_help(parser, args))
         else:
             parser.print_help()
             sys.exit(0)

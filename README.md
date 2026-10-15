@@ -278,6 +278,8 @@ A configured pre-push hook runs verification before Git pushes changes to a remo
 | `vibeci verify --build-only` | Run build verification only |
 | `vibeci verify --fail-fast` | Stop immediately after the first failure |
 | `vibeci verify --timeout <sec>` | Set the maximum duration per check |
+| `vibeci upgrade` | Upgrade VibeCI to the latest version available on PyPI |
+| `vibeci help [command]` | Display help for VibeCI or a specific subcommand |
 | `vibeci rule` | Automatically install verification rules for AI coding assistants |
 | `vibeci rule status` | Check which AI assistant rules are configured in the project |
 | `vibeci rule print` | Print the raw AI verification prompt protocol to stdout |
