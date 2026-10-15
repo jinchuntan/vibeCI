@@ -120,6 +120,16 @@ def install_rules(root_dir: Path, agent: str = "all") -> list[str]:
         if _append_or_replace_rule(agents_md, VIBECI_RULE_CONTENT):
             installed_files.append("AGENTS.md")
 
+    # 5. Antigravity (.agents/rules/vibeci.md & AGENTS.md)
+    if agent in ("all", "antigravity"):
+        antigravity_rule = root_dir / ".agents" / "rules" / "vibeci.md"
+        if _append_or_replace_rule(antigravity_rule, VIBECI_RULE_CONTENT):
+            installed_files.append(".agents/rules/vibeci.md")
+        agents_md = root_dir / "AGENTS.md"
+        if "AGENTS.md" not in installed_files:
+            if _append_or_replace_rule(agents_md, VIBECI_RULE_CONTENT):
+                installed_files.append("AGENTS.md")
+
     return installed_files
 
 
@@ -132,6 +142,7 @@ def get_rule_status(root_dir: Path) -> dict[str, bool]:
         "CLAUDE.md": root_dir / "CLAUDE.md",
         ".github/copilot-instructions.md": root_dir / ".github" / "copilot-instructions.md",
         "AGENTS.md": root_dir / "AGENTS.md",
+        ".agents/rules/vibeci.md": root_dir / ".agents" / "rules" / "vibeci.md",
     }
     status = {}
     for name, path in targets.items():

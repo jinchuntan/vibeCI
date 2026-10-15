@@ -202,9 +202,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     rule_parser.add_argument(
         "--agent",
-        choices=["all", "cursor", "claude", "copilot", "universal"],
+        choices=["all", "cursor", "claude", "copilot", "universal", "antigravity"],
         default="all",
-        help="Target AI assistant: all (default), cursor, claude, copilot, or universal",
+        help="Target AI assistant: all (default), cursor, claude, copilot, universal, or antigravity",
     )
     rule_parser.add_argument(
         "-C",
