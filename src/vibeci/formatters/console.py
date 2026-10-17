@@ -28,8 +28,21 @@ from vibeci.models import CheckResult, CheckStatus, OverallStatus, VerificationR
 
 class ConsoleFormatter:
     def __init__(self, console: Optional[Console] = None):
+        if sys.platform == "win32":
+            try:
+                if hasattr(sys.stdout, "reconfigure"):
+                    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+                if hasattr(sys.stderr, "reconfigure"):
+                    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+            except Exception:
+                pass
+
         if HAS_RICH:
-            self.console = console or Console(theme=custom_theme)
+            self.console = console or Console(
+                theme=custom_theme,
+                legacy_windows=False if sys.platform == "win32" else None,
+                safe_box=True,
+            )
         else:
             self.console = None
         self._status = None

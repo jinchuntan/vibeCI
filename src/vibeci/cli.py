@@ -642,6 +642,16 @@ def handle_upgrade(args: argparse.Namespace) -> int:
 
 
 def main(argv: Optional[list[str]] = None) -> None:
+    # Ensure Windows console encoding supports UTF-8 / emojis safely without charmap crashes
+    if sys.platform == "win32":
+        try:
+            if hasattr(sys.stdout, "reconfigure"):
+                sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+            if hasattr(sys.stderr, "reconfigure"):
+                sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
     try:
         if argv is None:
             raw_argv = sys.argv[1:]
