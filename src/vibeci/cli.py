@@ -15,6 +15,7 @@ from typing import List, Optional
 
 from vibeci.config import VibeConfig, create_starter_config
 from vibeci.detectors import discover_checks
+from vibeci.detectors.vercel import audit_vercel_functions
 from vibeci.engine.coordinator import VerificationEngine
 from vibeci.formatters.console import ConsoleFormatter
 from vibeci.formatters.json_output import format_json_report
@@ -443,6 +444,11 @@ def handle_doctor(args: argparse.Namespace) -> int:
         print(f"\nConfiguration: Found custom configuration at {cfg_file.name}")
     else:
         print("\nConfiguration: Zero-config mode (using defaults)")
+
+    # Platform pre-flight check (Vercel)
+    vercel_res = audit_vercel_functions(root_dir)
+    if vercel_res:
+        print(f"\nPlatform Pre-Flight (Vercel): {vercel_res.summary}")
 
     print()
     return 0

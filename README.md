@@ -7,7 +7,7 @@
 <h1 align="center">VibeCI</h1>
 
 <p align="center">
-  <strong>Your AI wrote it. VibeCI checks it.</strong><br />
+  <strong>Stop burning CI minutes. Catch failures on your laptop in 3 seconds.</strong><br />
   Local verification for AI-generated code — before it reaches CI or production.
 </p>
 
@@ -31,19 +31,26 @@
 
 ---
 
+> *"Stop burning CI minutes waiting on remote pipelines just to find a missing env variable, a broken import, or a Vercel serverless function limit. Catch it locally on your laptop in 3 seconds before you push."*  
+> — **@Wukong on X**
+
+---
+
 ## 💡 The Problem
 
 AI coding assistants make it easier than ever to generate code. But generated code is not necessarily working code.
 
 - A feature can compile while referencing missing environment variables.
-- A project can have no tests at all.
+- A deployment can exceed platform limits (like Vercel Hobby's 12 serverless functions limit) with zero local compiler warnings.
 - An application can build successfully and still crash when it starts.
+- A hardcoded secret or API key can accidentally get committed and pushed.
+- A project can have no tests at all.
 
 Running `npm test` or `pytest` only tells you what the tests you actually wrote can establish.
 
 **VibeCI helps you catch more problems before you push.**
 
-It brings project checks, static analysis, build verification, environment preflight, and runtime smoke testing into one local workflow. It also produces structured results that AI coding agents can use to investigate and fix failures.
+It brings project checks, static analysis, build verification, platform pre-flight audits, environment checks, and runtime smoke testing into one local sub-second workflow. It also produces structured results that AI coding agents can use to investigate and fix failures.
 
 No cloud dashboard. No separate CI server. No requirement to write a complete test suite before getting useful feedback.
 
@@ -117,6 +124,7 @@ VibeCI is designed to provide useful verification even when a project has few or
 
 ### 1. Static Health and Environment Preflight
 *Find problems that can be detected without starting the application.*
+- **Platform pre-flight checks:** Catch deployment platform limits before push (e.g., Vercel Serverless Function limits on Hobby vs Pro, preventing wasted CI pipelines).
 - **Secret leak detection:** Scan for potentially exposed credentials and hardcoded secrets (AWS keys, GitHub tokens, database passwords).
 - **Environment preflight:** Compare recognized environment variable references (`process.env`, `os.environ`) with `.env.example`.
 - **Type & lint checks:** Run applicable linting and type-checking tools when available (`tsc --noEmit`, `mypy`, `ruff`, `eslint`, `biome`).

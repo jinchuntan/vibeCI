@@ -17,6 +17,7 @@ from typing import Callable, List, Optional
 
 from vibeci.config import VibeConfig
 from vibeci.detectors import discover_checks
+from vibeci.detectors.vercel import audit_vercel_functions
 from vibeci.engine.build.build_verifier import BuildVerifier
 from vibeci.engine.diff.analyzer import ChangedFilesResult, GitChangeAnalyzer
 from vibeci.engine.health.env_audit import EnvAuditor
@@ -163,6 +164,21 @@ class VerificationEngine:
             results.append(sec_res)
             if on_complete:
                 on_complete(sec_res)
+
+            # 3. Platform pre-flight: Vercel serverless function limits
+            vercel_res = audit_vercel_functions(self.root_dir)
+            if vercel_res:
+                vercel_def = CheckDefinition(
+                    name=vercel_res.name,
+                    layer=CheckLayer.STATIC_HEALTH,
+                    check_type=CheckType.ENV,
+                    description="Vercel serverless function deployment limits",
+                )
+                if on_start:
+                    on_start(vercel_def)
+                results.append(vercel_res)
+                if on_complete:
+                    on_complete(vercel_res)
 
             # 3. Static type and lint checks
             static_checks = [c for c in discovered_checks if c.check_type in (CheckType.LINT, CheckType.TYPECHECK)]
