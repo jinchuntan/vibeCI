@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import json
+import shlex
 import shutil
 from pathlib import Path
 from typing import Any, List, Optional
 
 from vibeci.detectors.base import BaseDetector
-from vibeci.models import CheckDefinition, CheckType
+from vibeci.models import CheckDefinition, CheckLayer, CheckType
 
 
 class JavaScriptDetector(BaseDetector):
@@ -50,6 +51,32 @@ class JavaScriptDetector(BaseDetector):
             return ["npx", "--no-install"]
         return ["npm", "exec"]
 
+    def _get_bun_test_command(self, script: str) -> Optional[list[str]]:
+        """Return a single Bun test command for a simple script."""
+        if any(char in script for char in "&|;<>()`$\\"):
+            return None
+        try:
+            args = shlex.split(script)
+        except ValueError:
+            return None
+
+        # Preserve option values and positional arguments when removing reload flags.
+        value_options = {
+            "-t", "--test-name-pattern", "-r", "--preload", "--coverage-dir",
+            "--coverage-reporter", "--reporter", "--reporter-outfile",
+            "--path-ignore-patterns", "--cwd", "--env-file", "--config",
+        }
+        command: list[str] = []
+        takes_value = False
+        for index, arg in enumerate(args):
+            if arg == "--" and not takes_value:
+                command.extend(args[index:])
+                break
+            if takes_value or arg not in ("--watch", "--hot"):
+                command.append(arg)
+                takes_value = not takes_value and arg in value_options
+        return command if command[:2] == ["bun", "test"] else None
+
     def detect(self, root_dir: Path) -> list[CheckDefinition]:
         checks: list[CheckDefinition] = []
         pkg_json_file = root_dir / "package.json"
@@ -76,13 +103,20 @@ class JavaScriptDetector(BaseDetector):
 
         if test_script_names:
             for sname in test_script_names:
+                bun_command = self._get_bun_test_command(scripts[sname])
+                if f"pre{sname}" in scripts or f"post{sname}" in scripts:
+                    bun_command = None
                 checks.append(
                     CheckDefinition(
-                        name=f"{pm}:{sname}",
-                        command=pm_run + [sname],
+                        name=f"bun:{sname}" if bun_command else f"{pm}:{sname}",
+                        command=bun_command or pm_run + [sname],
+                        layer=(CheckLayer.BEHAVIOR if bun_command else CheckLayer.CUSTOM),
                         check_type=CheckType.TEST,
                         cwd=root_dir,
-                        description=f"Run tests using `{pm} run {sname}`",
+                        description=(
+                            "Run tests with Bun" if bun_command
+                            else f"Run tests using `{pm} run {sname}`"
+                        ),
                         required=True,
                         discovered_by="javascript-detector",
                     )
@@ -136,6 +170,19 @@ class JavaScriptDetector(BaseDetector):
                             command=exec_prefix + ["jest"],
                             check_type=CheckType.TEST,
                             cwd=root_dir,
+                            required=True,
+                            discovered_by="javascript-detector",
+                        )
+                    )
+                elif (root_dir / "bun.lock").exists() or (root_dir / "bun.lockb").exists():
+                    checks.append(
+                        CheckDefinition(
+                            name="bun:test",
+                            command=["bun", "test"],
+                            layer=CheckLayer.BEHAVIOR,
+                            check_type=CheckType.TEST,
+                            cwd=root_dir,
+                            description="Run tests with Bun",
                             required=True,
                             discovered_by="javascript-detector",
                         )
