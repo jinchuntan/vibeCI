@@ -150,7 +150,7 @@ VibeCI is designed to provide useful verification even when a project has few or
 
 ### 4. Existing Tests
 *Discover and run supported test commands.*
-- Discover and execute configured `pytest`, `vitest`, and `jest` suites.
+- Discover and execute configured `pytest`, `vitest`, `jest` and `bun test` suites.
 - Reuses existing testing tools rather than replacing them with a proprietary test runner.
 - Enforce non-interactive CI flags to prevent test runners from hanging in interactive watch mode.
 
